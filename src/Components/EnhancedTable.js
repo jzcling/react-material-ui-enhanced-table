@@ -66,8 +66,8 @@ export default function EnhancedTable(props) {
   const {
     title,
     rows,
-    meta,
-    descriptor,
+    pageCount,
+    descriptorAttribute,
     headers,
     order,
     orderBy,
@@ -81,7 +81,7 @@ export default function EnhancedTable(props) {
     handlePageChange,
     handleRowsPerPageChange,
     handleNestedAction,
-    handleNestedChange,
+    handleNestedFieldChange,
     handleActionClick,
     disableRowClick,
     handleUniversalFilterChange,
@@ -329,13 +329,19 @@ export default function EnhancedTable(props) {
       return [key, content];
     }
 
+    if (header.html) {
+      content = header.html;
+      content = content.replace(`{{0}}`, _.get(data, header.attribute));
+      return [key, content];
+    }
+
     return [key, _.get(data, header.attribute)];
   }
 
   const getRowSpan = (row) => {
     return headers
       .map((header) => {
-        if (header.array) {
+        if (header.arrayAttribute) {
           return (_.get(row, header.childAttribute) || []).length;
         }
         return 1;
@@ -349,7 +355,7 @@ export default function EnhancedTable(props) {
         {showToolbar ? (
           <EnhancedTableToolbar
             selected={selected.length > 0 ? selected[0] : {}}
-            descriptor={descriptor}
+            descriptorAttribute={descriptorAttribute}
             handleActionClick={(event, action) =>
               handleActionClick(event, action)
             }
@@ -407,14 +413,14 @@ export default function EnhancedTable(props) {
                       })}
                     >
                       {headers.map((header) => {
-                        if (header.array) {
+                        if (header.arrayAttribute) {
                           return (
                             <EnhancedSubTable
                               key={getKey(header)}
                               header={header}
                               row={row}
                               handleNestedAction={handleNestedAction}
-                              handleNestedChange={handleNestedChange}
+                              handleNestedFieldChange={handleNestedFieldChange}
                               nestedRowAction={nestedRowAction}
                               formatContent={formatContent}
                             />
@@ -480,11 +486,11 @@ export default function EnhancedTable(props) {
             </TableBody>
           </Table>
         </TableContainer>
-        {meta && meta.total > 0 ? (
+        {pageCount ? (
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={meta.total || 0}
+            count={pageCount || 0}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handlePageChange}
@@ -511,7 +517,7 @@ EnhancedTable.defaultProps = {
   handleRowClick: () => {},
   handleRequestSort: () => {},
   handleNestedAction: () => {},
-  handleNestedChange: () => {},
+  handleNestedFieldChange: () => {},
   handleActionClick: () => {},
   disableRowClick: false,
   handleUniversalFilterChange: () => {},
@@ -536,8 +542,8 @@ EnhancedTable.defaultProps = {
 
 EnhancedTable.propTypes = {
   rows: PropTypes.array.isRequired,
-  meta: PropTypes.object,
-  descriptor: PropTypes.string,
+  pageCount: PropTypes.number,
+  descriptorAttribute: PropTypes.string,
   headers: PropTypes.array.isRequired,
   dense: PropTypes.bool,
   order: PropTypes.oneOf(["", "asc", "desc"]),
@@ -551,7 +557,7 @@ EnhancedTable.propTypes = {
   handlePageChange: PropTypes.func,
   handleRowsPerPageChange: PropTypes.func,
   handleNestedAction: PropTypes.func,
-  handleNestedChange: PropTypes.func,
+  handleNestedFieldChange: PropTypes.func,
   handleActionClick: PropTypes.func,
   disableRowClick: PropTypes.bool,
   handleUniversalFilterChange: PropTypes.func,

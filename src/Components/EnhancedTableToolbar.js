@@ -27,6 +27,7 @@ import {
 import MomentUtils from "@date-io/moment";
 import { Cached, CloudUpload } from "@material-ui/icons";
 import { amber, indigo } from "@material-ui/core/colors";
+import _ from "lodash";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
 export default function EnhancedTableToolbar(props) {
   const {
     selected,
-    descriptor,
+    descriptorAttribute,
     handleActionClick,
     actionButtons,
     handleUniversalFilterChange,
@@ -89,15 +90,6 @@ export default function EnhancedTableToolbar(props) {
     disableSelection,
   } = props;
   const classes = useStyles();
-
-  const selectedDescriptor = useMemo(() => {
-    const keys = descriptor.split(".");
-    if (keys.length === 2) {
-      return selected[keys[0]] ? selected[keys[0]][keys[1]] : null;
-    } else {
-      return selected[descriptor];
-    }
-  }, [selected, descriptor]);
 
   const debouncedHandler = useCallback(
     debounce((event) => handleUniversalFilterChange(event), 700),
@@ -122,7 +114,7 @@ export default function EnhancedTableToolbar(props) {
           variant="subtitle1"
           component="div"
         >
-          {selectedDescriptor}
+          {_.get(selected, descriptorAttribute)}
         </Typography>
       ) : actionButtons.includes("dateFilters") ? (
         <Fragment>
@@ -282,7 +274,6 @@ export default function EnhancedTableToolbar(props) {
 
 EnhancedTableToolbar.defaultProps = {
   actionButtons: ["create", "edit", "delete", "filter"],
-  descriptor: "",
   refreshBadgeCount: 0,
   disableSelection: false,
   loading: false,
@@ -290,7 +281,7 @@ EnhancedTableToolbar.defaultProps = {
 
 EnhancedTableToolbar.propTypes = {
   selected: PropTypes.object,
-  descriptor: PropTypes.string,
+  descriptorAttribute: PropTypes.string,
   handleActionClick: PropTypes.func.isRequired,
   actionButtons: PropTypes.array,
   handleUniversalFilterChange: PropTypes.func.isRequired,

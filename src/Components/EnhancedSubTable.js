@@ -55,7 +55,7 @@ export default function EnhancedSubTable(props) {
     header,
     row,
     handleNestedAction,
-    handleNestedChange,
+    handleNestedFieldChange,
     nestedRowAction,
     formatContent,
   } = props;
@@ -77,7 +77,7 @@ export default function EnhancedSubTable(props) {
                   colSpan={
                     1 +
                     !!(header.childActions && header.childActions.delete) +
-                    !!header.childLabel
+                    !!header.childLabelAttribute
                   }
                 >
                   {nestedRowAction[row.id] &&
@@ -144,9 +144,9 @@ export default function EnhancedSubTable(props) {
                 </td>
               </TableRow>
             )}
-          {_.get(row, header.array).map((item) => (
+          {_.get(row, header.arrayAttribute).map((item) => (
             <TableRow key={`${getKey(header)}-${item.id}-label`}>
-              {header.childLabel ? (
+              {header.childLabelAttribute ? (
                 <td key={`${getKey(header)}-${item.id}-label`} align="left">
                   {(nestedRowAction[row.id] && nestedRowAction[row.id].edit) ||
                   String(item.id).startsWith("p") ? (
@@ -160,20 +160,20 @@ export default function EnhancedSubTable(props) {
                         variant="outlined"
                         margin="dense"
                         id={`${getKey(header)}-${item.id}-label`}
-                        value={item[header.childLabel]}
+                        value={item[header.childLabelAttribute]}
                         onChange={(event) =>
-                          handleNestedChange(
+                          handleNestedFieldChange(
                             row.id,
                             item.id,
-                            header.childLabel,
+                            header.childLabelAttribute,
                             event.target.value
                           )
                         }
-                        label={capitalize(header.childLabel)}
+                        label={capitalize(header.childLabelAttribute)}
                       />
                     </FormControl>
                   ) : (
-                    item[header.childLabel]
+                    item[header.childLabelAttribute]
                   )}
                 </td>
               ) : null}
@@ -200,7 +200,7 @@ export default function EnhancedSubTable(props) {
                           id={`${getKey(header)}-${item.id}`}
                           value={_.get(item, header.childAttribute2)}
                           onChange={(event) =>
-                            handleNestedChange(
+                            handleNestedFieldChange(
                               row.id,
                               item.id,
                               header.childAttribute2,
@@ -230,7 +230,7 @@ export default function EnhancedSubTable(props) {
                         id={`${getKey(header)}-${item.id}`}
                         value={_.get(item, header.childAttribute)}
                         onChange={(event) =>
-                          handleNestedChange(
+                          handleNestedFieldChange(
                             row.id,
                             item.id,
                             header.childAttribute,
@@ -282,7 +282,7 @@ export default function EnhancedSubTable(props) {
 
 EnhancedSubTable.defaultProps = {
   handleNestedAction: () => {},
-  handleNestedChange: () => {},
+  handleNestedFieldChange: () => {},
   nestedRowAction: {},
 };
 
@@ -290,7 +290,7 @@ EnhancedSubTable.propTypes = {
   header: PropTypes.object.isRequired,
   row: PropTypes.object.isRequired,
   handleNestedAction: PropTypes.func,
-  handleNestedChange: PropTypes.func,
+  handleNestedFieldChange: PropTypes.func,
   nestedRowAction: PropTypes.object,
   formatContent: PropTypes.func.isRequired,
 };

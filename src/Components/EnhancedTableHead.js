@@ -44,7 +44,7 @@ export default function EnhancedTableHead(props) {
         {header.label}
         {header.headerActions &&
           header.headerActions.map((action) =>
-            action.condition ? (
+            action.hideCondition ? null : (
               <Tooltip key={action.id} title={action.tooltip}>
                 <IconButton
                   aria-label={action.tooltip}
@@ -58,7 +58,7 @@ export default function EnhancedTableHead(props) {
                   {action.icon}
                 </IconButton>
               </Tooltip>
-            ) : null
+            )
           )}
       </Grid>
     );
