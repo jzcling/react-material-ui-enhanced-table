@@ -8,7 +8,453 @@ An extended React Material UI Table that aims to make creating complex tables mo
 npm install --save @jeremyling/react-material-ui-enhanced-table
 ```
 
-## Usage Example
+## Usage Examples
+
+Example of a collapsible table with a nested table as the collapse content.
+
+```jsx
+import React, { useEffect, useState } from "react";
+import EnhancedTable from "@jeremyling/react-material-ui-enhanced-table";
+import {
+  amber,
+  blueGrey,
+  green,
+  indigo,
+  lightGreen,
+  red,
+  teal,
+} from "@material-ui/core/colors";
+import {
+  Block,
+  KeyboardReturn,
+  LocalShipping,
+  MoveToInbox,
+  Receipt,
+} from "@material-ui/icons";
+
+export default function Orders(props) {
+  const [data, setData] = useState([]);
+  const [pageCount, setPageCount] = useState();
+  const [tableLoading, setTableLoading] = useState(false);
+  const [order, setOrder] = useState("");
+  const [orderBy, setOrderBy] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const [selectedRow, setSelectedRow] = useState();
+  const [selectedItems, setSelectedItems] = useState({});
+
+  const [openRows, setOpenRows] = useState({});
+
+  const [filters, setFilters] = useState();
+
+  const [notificationsCount, setNotificationsCount] = useState();
+
+  const headers = [
+    {
+      key: "collapse",
+      collapse: true,
+    },
+    { attribute: "order_number", label: "Order No" },
+    {
+      key: "status",
+      attribute: "status",
+      label: "Status",
+      chip: true,
+      color: {
+        "In Progress": [amber[50], amber[200]],
+        Completed: [green[50], green[200]],
+      },
+    },
+    {
+      attribute: "updated_at",
+      datetime: true,
+      label: "Updated",
+    },
+    {
+      multiField: true,
+      key: "customer",
+      data: [
+        {
+          attribute: "user.name",
+        },
+        {
+          attribute: "user.email",
+        },
+        {
+          attribute: "user.phone",
+        },
+      ],
+      html: `
+        <div><strong>{{0}}</strong></div>
+        <div style="color: #777">{{1}}</div>
+        <div style="color: #777">{{2}}</div>
+      `,
+      label: "Customer",
+    },
+    {
+      attribute: "total",
+      label: "Total",
+      numeric: true,
+      price: true,
+    },
+    {
+      key: "actions",
+      actions: [
+        {
+          id: "process",
+          icon: <MoveToInbox />,
+          tooltip: "Process",
+          onClick: (event, row) => handleAction(event, "process", row),
+          color: amber[400],
+          hideCondition: (row) => {},
+        },
+        {
+          id: "cancel",
+          icon: <Block />,
+          tooltip: "Cancel",
+          onClick: (event, row) => handleAction(event, "cancel", row),
+          color: indigo[400],
+        },
+      ],
+      label: "Actions",
+    },
+  ];
+
+  const collapseContent = () => {
+    const collapseHeaders = [
+      {
+        key: "checkbox",
+        checkbox: true,
+      },
+      {
+        key: "image",
+        label: "Image",
+        component: (data) => (
+          <img src={data.image.url} alt={data.name} loading="lazy" />
+        ),
+        stopPropagation: true,
+      },
+      {
+        multiField: true,
+        key: "product",
+        data: [
+          {
+            attribute: "product.name",
+          },
+          {
+            attribute: "product.sku",
+          },
+        ],
+        html: `
+        <div><strong>{{0}}</strong></div>
+        <div><strong style="color: #777">SKU: {{1}}</strong></div>
+      `,
+        label: "Product",
+        minWidth: "200px",
+      },
+      {
+        key: "status",
+        attribute: "status",
+        label: "Status",
+        chip: true,
+        color: {
+          Pending: [amber[50], amber[200]],
+          Paid: [lightGreen[50], lightGreen[200]],
+          Processed: [indigo[50], indigo[200]],
+          Completed: [green[50], green[200]],
+        },
+      },
+      {
+        attribute: "updated_at",
+        datetime: true,
+        label: "Updated",
+      },
+      { attribute: "quantity", label: "Qty", numeric: true },
+      {
+        key: "actions",
+        actions: [
+          {
+            id: "process",
+            icon: <MoveToInbox />,
+            tooltip: "Process",
+            onClick: (event, row) => handleAction(event, "process", row),
+            color: amber[400],
+            hideCondition: (data) => {},
+          },
+          {
+            id: "cancel-order",
+            icon: <Block />,
+            tooltip: "Cancel",
+            onClick: (event, row) => handleAction(event, "cancel", row),
+            color: indigo[400],
+          },
+        ],
+        label: "Actions",
+      },
+    ];
+
+    if (data) {
+      return data.map((order) => (
+        <EnhancedTable
+          key={order.order_number}
+          rows={order.order_items}
+          headers={collapseHeaders}
+          handleActionClick={(event, key) => handleAction(event, key)}
+          handleRowClick={(event, row) =>
+            handleCollapsibleTableRowClick(event, row)
+          }
+          selected={selectedItems[order.id]}
+          showToolbar={false}
+          selectibleRows={getSelectibleItems(selectedRow)}
+        />
+      ));
+    }
+  };
+
+  const handleRowClick = (event, item) => {
+    setSelectedRow(item);
+  };
+
+  function handleCollapsibleTableRowClick(event, row) {}
+
+  function getSelectibleItems(row) {}
+
+  function updateOpenRows(event, key, value) {
+    event.stopPropagation();
+
+    var updated = JSON.parse(JSON.stringify(openRows));
+    updated[key] = value;
+    setOpenRows(updated);
+  }
+
+  const handleRequestSort = (event, property) => {
+    if (orderBy !== property) {
+      setOrder("asc");
+      setOrderBy(property);
+      return;
+    }
+
+    switch (order) {
+      case "asc":
+        setOrder("desc");
+        break;
+      case "desc":
+        setOrder("");
+        setOrderBy("");
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handlePageChange = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleDateChange = (type, value) => {
+    // Update filters
+  };
+
+  function handleAction(event, key, row = null) {}
+
+  useEffect(() => {
+    getData();
+
+    function getData() {
+      // Fetch data with filters
+    }
+  }, [order, orderBy, rowsPerPage, page, filters]);
+
+  return (
+    <EnhancedTable
+      rows={data || []}
+      pageCount={pageCount}
+      headers={headers}
+      order={order}
+      orderBy={orderBy}
+      loading={tableLoading}
+      page={page}
+      rowsPerPage={rowsPerPage}
+      handleRowClick={handleRowClick}
+      handleRequestSort={handleRequestSort}
+      handlePageChange={handlePageChange}
+      handleRowsPerPageChange={handleRowsPerPageChange}
+      handleActionClick={(event, key) => handleAction(event, key)}
+      handleDateChange={handleDateChange}
+      dates={{ from: filters.dateFrom, to: filters.dateTo }}
+      actionButtons={["dateFilters", "refresh"]}
+      collapsible={true}
+      collapseContent={collapseContent}
+      refreshBadgeCount={notificationsCount}
+      disableSelection={true}
+      openRows={openRows}
+      handleCollapseIconClick={updateOpenRows}
+    />
+  );
+}
+```
+
+Example with a nested table within each row
+
+```jsx
+import React, { useEffect, useState } from "react";
+import EnhancedTable from "@jeremyling/react-material-ui-enhanced-table";
+import { green, red } from "@material-ui/core/colors";
+
+export default function Products(props) {
+  const [data, setData] = useState([]);
+  const [pageCount, setPageCount] = useState();
+  const [tableLoading, setTableLoading] = useState(true);
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [selected, setSelected] = useState({});
+  const [universalFilter, setUniversalFilter] = useState("");
+
+  const [nestedRowAction, setNestedRowAction] = useState({});
+
+  const [filters, setFilters] = useState();
+
+  const headers = [
+    {
+      key: "images",
+      label: "Images",
+      component: (data) => (
+        <img src={data.image.url} alt={data.name} loading="lazy" />
+      ),
+      stopPropagation: true,
+    },
+    {
+      multiField: true,
+      key: "product",
+      data: [
+        {
+          attribute: "name",
+        },
+        {
+          attribute: "sku",
+        },
+      ],
+      html: `
+        <div><strong>{{0}}</strong></div>
+        <div><strong style="color: #777">SKU: {{2}}</strong></div>
+      `,
+      label: "Product",
+      minWidth: "200px",
+    },
+    {
+      key: "status",
+      attribute: "status",
+      label: "Status",
+      chip: true,
+      color: {
+        Inactive: [red[50], red[200]],
+        Active: [green[50], green[200]],
+      },
+    },
+    { attribute: "category", label: "Category" },
+    { attribute: "stock", label: "Stock", sortable: true, numeric: true },
+    {
+      key: "price",
+      label: "Price",
+      arrayAttribute: "prices",
+      childAttribute: "amount",
+      childAttribute2: "currency",
+      childLabelAttribute: "tag",
+      childActions: { delete: true, edit: true, add: true },
+      numeric: true,
+      price: true,
+    },
+  ];
+
+  const handleRowClick = (event, item) => {
+    if (item.id === selected.id) {
+      setSelected({});
+      return;
+    }
+    setSelected(item);
+  };
+
+  const handleAction = (event, key) => {};
+
+  const handleRequestSort = (event, property) => {
+    if (orderBy !== property) {
+      setOrder("asc");
+      setOrderBy(property);
+      return;
+    }
+
+    switch (order) {
+      case "asc":
+        setOrder("desc");
+        break;
+      case "desc":
+        setOrder("asc");
+        setOrderBy("");
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleUniversalFilterChange = (event) => {
+    setUniversalFilter(event.target.value);
+  };
+
+  const handlePageChange = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleNestedAction = (event, type, item, id) => {};
+
+  const handleNestedFieldChange = (parentId, id, attribute, value) => {};
+
+  useEffect(() => {
+    const getData = () => {
+      // Fetch data with filters
+    };
+
+    getData();
+  }, [universalFilter, order, orderBy, rowsPerPage, page, filters]);
+
+  return (
+    <EnhancedTable
+      rows={data || []}
+      pageCount={pageCount}
+      descriptorAttribute="name"
+      headers={headers}
+      order={order}
+      orderBy={orderBy}
+      loading={tableLoading}
+      page={page}
+      rowsPerPage={rowsPerPage}
+      selected={[selected]}
+      handleRowClick={handleRowClick}
+      handleRequestSort={handleRequestSort}
+      handlePageChange={handlePageChange}
+      handleRowsPerPageChange={handleRowsPerPageChange}
+      handleNestedAction={handleNestedAction}
+      handleNestedFieldChange={handleNestedFieldChange}
+      handleActionClick={(event, key) => handleAction(event, key)}
+      actionButtons={["create", "edit", "delete", "filter", "refresh"]}
+      handleUniversalFilterChange={handleUniversalFilterChange}
+      nestedRowAction={nestedRowAction}
+    ></EnhancedTable>
+  );
+}
+```
 
 ## Props
 
@@ -44,7 +490,7 @@ npm install --save @jeremyling/react-material-ui-enhanced-table
 | openRows                    | `object` | `{}`                                                                         | Object to indicate which collapsible rows should be open. Object should be of the form `{ [row[identifier]]: true }`                                                                                       |
 | handleCollapseIconClick     | `func`   | `() => {}`                                                                   | Method to handle collapse icon click event                                                                                                                                                                 |
 | disableRowClick             | `bool`   | `false`                                                                      | Whether to ignore click event on row                                                                                                                                                                       |
-| disableSelection            | `bool`   | `false`                                                                      |
+| disableSelection            | `bool`   | `false`                                                                      | Makes rows unselectable                                                                                                                                                                                    |
 | refreshBadgeCount           | `number` | `0`                                                                          | Badge count for refresh button. This can be used to indicate whether the table has pending unfetched data                                                                                                  |
 | selectibleRows              | `array`  | `null`                                                                       | Manually define the selectible rows. Array should contain the row identifiers                                                                                                                              |
 | identifier                  | `string` | `id`                                                                         | Attribute used as row identifier                                                                                                                                                                           |
