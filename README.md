@@ -17,20 +17,12 @@ import React, { useEffect, useState } from "react";
 import EnhancedTable from "@jeremyling/react-material-ui-enhanced-table";
 import {
   amber,
-  blueGrey,
   green,
   indigo,
   lightGreen,
   red,
-  teal,
 } from "@material-ui/core/colors";
-import {
-  Block,
-  KeyboardReturn,
-  LocalShipping,
-  MoveToInbox,
-  Receipt,
-} from "@material-ui/icons";
+import { Block, MoveToInbox } from "@material-ui/icons";
 
 export default function Orders(props) {
   const [data, setData] = useState([]);
