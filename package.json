@@ -1,6 +1,6 @@
 {
   "name": "@jeremyling/react-material-ui-enhanced-table",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "scripts": {
     "start": "react-scripts start",
     "build": "NODE_ENV=production && rm -rf dist && mkdir dist && npx babel src --out-dir dist --copy-files",
@@ -42,6 +42,8 @@
   "keywords": [
     "table",
     "enhanced table",
+    "nested table",
+    "collapsible table",
     "material ui",
     "react"
   ],

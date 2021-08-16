@@ -445,6 +445,7 @@ export default function EnhancedTable(props) {
                           <Collapse
                             in={openRows[row[identifier] || undefined]}
                             timeout="auto"
+                            mountOnEnter
                             unmountOnExit
                           >
                             <Box margin={1}>

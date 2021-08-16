@@ -11,6 +11,7 @@ import {
   TableRow,
   TextField,
   Tooltip,
+  Typography,
 } from "@material-ui/core";
 import {
   AddCircleOutlined,
@@ -21,6 +22,7 @@ import {
 } from "@material-ui/icons";
 import _ from "lodash";
 import { indigo } from "@material-ui/core/colors";
+import { Fragment } from "react";
 
 const useStyles = makeStyles((theme) => ({
   cell: {
@@ -144,12 +146,16 @@ export default function EnhancedSubTable(props) {
                 </td>
               </TableRow>
             )}
-          {_.get(row, header.arrayAttribute).map((item) => (
-            <TableRow key={`${getKey(header)}-${item.id}-label`}>
+          {_.get(row, header.arrayAttribute).map((item, index) => (
+            <TableRow key={`${getKey(header)}-${item.id || index}-label`}>
               {header.childLabelAttribute ? (
-                <td key={`${getKey(header)}-${item.id}-label`} align="left">
-                  {(nestedRowAction[row.id] && nestedRowAction[row.id].edit) ||
-                  String(item.id).startsWith("p") ? (
+                <td
+                  key={`${getKey(header)}-${item.id || index}-label`}
+                  align="left"
+                >
+                  {nestedRowAction[row.id] &&
+                  (nestedRowAction[row.id].edit ||
+                    nestedRowAction[row.id].add) ? (
                     <FormControl
                       variant="outlined"
                       className={classes.nestedTextField}
@@ -159,30 +165,39 @@ export default function EnhancedSubTable(props) {
                         fullWidth
                         variant="outlined"
                         margin="dense"
-                        id={`${getKey(header)}-${item.id}-label`}
+                        id={`${getKey(header)}-${item.id || index}-label`}
                         value={item[header.childLabelAttribute]}
                         onChange={(event) =>
                           handleNestedFieldChange(
                             row.id,
-                            item.id,
+                            item.id || index,
                             header.childLabelAttribute,
                             event.target.value
                           )
                         }
-                        label={capitalize(header.childLabelAttribute)}
+                        label={
+                          header.childLabelAttributeLabel ||
+                          capitalize(header.childLabelAttribute)
+                        }
                       />
                     </FormControl>
                   ) : (
-                    item[header.childLabelAttribute]
+                    <Fragment>
+                      {header.childAttributeLabel && (
+                        <div>{header.childLabelAttributeLabel}</div>
+                      )}
+                      <div>{_.get(item, header.childLabelAttribute)}</div>
+                    </Fragment>
                   )}
                 </td>
               ) : null}
               <td
-                key={`${getKey(header)}-${item.id}`}
+                key={`${getKey(header)}-${item.id || index}`}
                 align={header.numeric ? "right" : "left"}
               >
-                {(nestedRowAction[row.id] && nestedRowAction[row.id].edit) ||
-                String(item.id).startsWith("p") ? (
+                {nestedRowAction[row.id] &&
+                (nestedRowAction[row.id].edit ||
+                  nestedRowAction[row.id].add) ? (
                   <div style={{ display: "flex" }}>
                     {header.childAttribute2 ? (
                       <FormControl
@@ -197,12 +212,12 @@ export default function EnhancedSubTable(props) {
                           fullWidth
                           variant="outlined"
                           margin="dense"
-                          id={`${getKey(header)}-${item.id}`}
+                          id={`${getKey(header)}-${item.id || index}-2`}
                           value={_.get(item, header.childAttribute2)}
                           onChange={(event) =>
                             handleNestedFieldChange(
                               row.id,
-                              item.id,
+                              item.id || index,
                               header.childAttribute2,
                               event.target.value
                             )
@@ -212,9 +227,10 @@ export default function EnhancedSubTable(props) {
                               textAlign: header.numeric ? "right" : "left",
                             },
                           }}
-                          label={capitalize(
-                            header.childAttribute2.split(".").pop()
-                          )}
+                          label={
+                            header.childAttribute2Label ||
+                            capitalize(header.childAttribute2.split(".").pop())
+                          }
                         />
                       </FormControl>
                     ) : null}
@@ -227,12 +243,12 @@ export default function EnhancedSubTable(props) {
                         fullWidth
                         variant="outlined"
                         margin="dense"
-                        id={`${getKey(header)}-${item.id}`}
+                        id={`${getKey(header)}-${item.id || index}`}
                         value={_.get(item, header.childAttribute)}
                         onChange={(event) =>
                           handleNestedFieldChange(
                             row.id,
-                            item.id,
+                            item.id || index,
                             header.childAttribute,
                             event.target.value
                           )
@@ -242,29 +258,41 @@ export default function EnhancedSubTable(props) {
                             textAlign: header.numeric ? "right" : "left",
                           },
                         }}
-                        label={capitalize(
-                          header.childAttribute.split(".").pop()
-                        )}
+                        label={
+                          header.childAttributeLabel ||
+                          capitalize(header.childAttribute.split(".").pop())
+                        }
                       />
                     </FormControl>
                   </div>
                 ) : (
-                  formatContent(
-                    header,
-                    _.get(item, header.childAttribute),
-                    _.get(item, header.childAttribute2) || null
-                  )
+                  <Fragment>
+                    {header.childAttributeLabel && (
+                      <div>{header.childAttributeLabel}</div>
+                    )}
+                    {formatContent(
+                      header,
+                      _.get(item, header.childAttribute),
+                      _.get(item, header.childAttribute2) || null
+                    )}
+                  </Fragment>
                 )}
               </td>
               {header.childActions && header.childActions.delete ? (
-                <td key={`child-${item.id}-delete`} align="right">
+                <td key={`child-${item.id || index}-delete`} align="right">
                   <Tooltip title="Delete">
                     <IconButton
                       edge="end"
                       className={classes.deleteButton}
                       aria-label="delete"
                       onClick={(event) =>
-                        handleNestedAction(event, "delete", item, header.key)
+                        handleNestedAction(
+                          event,
+                          "delete",
+                          item,
+                          header.key,
+                          index
+                        )
                       }
                     >
                       <Cancel />
