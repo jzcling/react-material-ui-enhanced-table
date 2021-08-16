@@ -63,6 +63,10 @@ export default function EnhancedSubTable(props) {
   } = props;
   const classes = useStyles();
 
+  const editing =
+    nestedRowAction[row.id] &&
+    (nestedRowAction[row.id].edit || nestedRowAction[row.id].add);
+
   return (
     <TableCell
       key={`${getKey(header)}-${row.id}`}
@@ -82,9 +86,7 @@ export default function EnhancedSubTable(props) {
                     !!header.childLabelAttribute
                   }
                 >
-                  {nestedRowAction[row.id] &&
-                  (nestedRowAction[row.id].edit ||
-                    nestedRowAction[row.id].add) ? (
+                  {editing ? (
                     <Tooltip title="Reset">
                       <IconButton
                         edge="end"
@@ -98,9 +100,7 @@ export default function EnhancedSubTable(props) {
                       </IconButton>
                     </Tooltip>
                   ) : null}
-                  {nestedRowAction[row.id] &&
-                  (nestedRowAction[row.id].edit ||
-                    nestedRowAction[row.id].add) ? (
+                  {editing ? (
                     <Tooltip title="Save">
                       <IconButton
                         edge="end"
@@ -146,6 +146,19 @@ export default function EnhancedSubTable(props) {
                 </td>
               </TableRow>
             )}
+
+          <TableRow>
+            {header.childLabelAttributeLabel && !editing && (
+              <TableCell style={{ padding: 0 }}>
+                {header.childLabelAttributeLabel}
+              </TableCell>
+            )}
+            {header.childAttributeLabel && !editing && (
+              <TableCell style={{ padding: 0 }}>
+                {header.childAttributeLabel}
+              </TableCell>
+            )}
+          </TableRow>
           {_.get(row, header.arrayAttribute).map((item, index) => (
             <TableRow key={`${getKey(header)}-${item.id || index}-label`}>
               {header.childLabelAttribute ? (
@@ -153,9 +166,7 @@ export default function EnhancedSubTable(props) {
                   key={`${getKey(header)}-${item.id || index}-label`}
                   align="left"
                 >
-                  {nestedRowAction[row.id] &&
-                  (nestedRowAction[row.id].edit ||
-                    nestedRowAction[row.id].add) ? (
+                  {editing ? (
                     <FormControl
                       variant="outlined"
                       className={classes.nestedTextField}
@@ -182,12 +193,7 @@ export default function EnhancedSubTable(props) {
                       />
                     </FormControl>
                   ) : (
-                    <Fragment>
-                      {header.childAttributeLabel && (
-                        <div>{header.childLabelAttributeLabel}</div>
-                      )}
-                      <div>{_.get(item, header.childLabelAttribute)}</div>
-                    </Fragment>
+                    <div>{_.get(item, header.childLabelAttribute)}</div>
                   )}
                 </td>
               ) : null}
@@ -195,9 +201,7 @@ export default function EnhancedSubTable(props) {
                 key={`${getKey(header)}-${item.id || index}`}
                 align={header.numeric ? "right" : "left"}
               >
-                {nestedRowAction[row.id] &&
-                (nestedRowAction[row.id].edit ||
-                  nestedRowAction[row.id].add) ? (
+                {editing ? (
                   <div style={{ display: "flex" }}>
                     {header.childAttribute2 ? (
                       <FormControl
@@ -266,16 +270,11 @@ export default function EnhancedSubTable(props) {
                     </FormControl>
                   </div>
                 ) : (
-                  <Fragment>
-                    {header.childAttributeLabel && (
-                      <div>{header.childAttributeLabel}</div>
-                    )}
-                    {formatContent(
-                      header,
-                      _.get(item, header.childAttribute),
-                      _.get(item, header.childAttribute2) || null
-                    )}
-                  </Fragment>
+                  formatContent(
+                    header,
+                    _.get(item, header.childAttribute),
+                    _.get(item, header.childAttribute2) || null
+                  )
                 )}
               </td>
               {header.childActions && header.childActions.delete ? (
@@ -291,6 +290,7 @@ export default function EnhancedSubTable(props) {
                           "delete",
                           item,
                           header.key,
+                          row,
                           index
                         )
                       }
