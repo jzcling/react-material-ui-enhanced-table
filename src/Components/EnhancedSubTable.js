@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import {
   capitalize,
@@ -11,7 +11,6 @@ import {
   TableRow,
   TextField,
   Tooltip,
-  Typography,
 } from "@material-ui/core";
 import {
   AddCircleOutlined,
@@ -22,7 +21,6 @@ import {
 } from "@material-ui/icons";
 import _ from "lodash";
 import { indigo } from "@material-ui/core/colors";
-import { Fragment } from "react";
 
 const useStyles = makeStyles((theme) => ({
   cell: {
@@ -63,9 +61,20 @@ export default function EnhancedSubTable(props) {
   } = props;
   const classes = useStyles();
 
-  const editing =
-    nestedRowAction[row.id] &&
-    (nestedRowAction[row.id].edit || nestedRowAction[row.id].add);
+  const editing = useMemo(
+    () =>
+      nestedRowAction[row.id] &&
+      (nestedRowAction[row.id].edit || nestedRowAction[row.id].add),
+    [nestedRowAction, row.id]
+  );
+
+  const data = useMemo(() => {
+    const data = _.get(row, header.arrayAttribute);
+    if (header.orderBy && header.orderBy[0]) {
+      return data.sort((a, b) => a.min_quantity - b.min_quantity);
+    }
+    return data;
+  }, [row, header]);
 
   return (
     <TableCell
@@ -159,7 +168,7 @@ export default function EnhancedSubTable(props) {
               </TableCell>
             )}
           </TableRow>
-          {_.get(row, header.arrayAttribute).map((item, index) => (
+          {data.map((item, index) => (
             <TableRow key={`${getKey(header)}-${item.id || index}-label`}>
               {header.childLabelAttribute ? (
                 <td
