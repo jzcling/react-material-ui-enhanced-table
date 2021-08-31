@@ -66,7 +66,7 @@ export default function EnhancedTable(props) {
   const {
     title,
     rows,
-    pageCount,
+    totalCount,
     descriptorAttribute,
     headers,
     order,
@@ -487,11 +487,11 @@ export default function EnhancedTable(props) {
             </TableBody>
           </Table>
         </TableContainer>
-        {pageCount ? (
+        {totalCount ? (
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={pageCount || 0}
+            count={totalCount || 0}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handlePageChange}
@@ -543,7 +543,7 @@ EnhancedTable.defaultProps = {
 
 EnhancedTable.propTypes = {
   rows: PropTypes.array.isRequired,
-  pageCount: PropTypes.number,
+  totalCount: PropTypes.number,
   descriptorAttribute: PropTypes.string,
   headers: PropTypes.array.isRequired,
   dense: PropTypes.bool,

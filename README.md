@@ -26,7 +26,7 @@ import { Block, MoveToInbox } from "@material-ui/icons";
 
 export default function Orders(props) {
   const [data, setData] = useState([]);
-  const [pageCount, setPageCount] = useState();
+  const [totalCount, setTotalCount] = useState();
   const [tableLoading, setTableLoading] = useState(false);
   const [order, setOrder] = useState("");
   const [orderBy, setOrderBy] = useState("");
@@ -266,7 +266,7 @@ export default function Orders(props) {
   return (
     <EnhancedTable
       rows={data || []}
-      pageCount={pageCount}
+      totalCount={totalCount}
       headers={headers}
       order={order}
       orderBy={orderBy}
@@ -301,7 +301,7 @@ import { green, red } from "@material-ui/core/colors";
 
 export default function Products(props) {
   const [data, setData] = useState([]);
-  const [pageCount, setPageCount] = useState();
+  const [totalCount, setTotalCount] = useState();
   const [tableLoading, setTableLoading] = useState(true);
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("");
@@ -424,7 +424,7 @@ export default function Products(props) {
   return (
     <EnhancedTable
       rows={data || []}
-      pageCount={pageCount}
+      totalCount={totalCount}
       descriptorAttribute="name"
       headers={headers}
       order={order}
@@ -459,7 +459,7 @@ export default function Products(props) {
 | orderBy                     | `string` | `id`                                                                         | Attribute to sort column by                                                                                                                                                                                |
 | loading                     | `bool`   | `false`                                                                      | Whether to display loading Backdrop component                                                                                                                                                              |
 | page                        | `number` | `1`                                                                          | Current page                                                                                                                                                                                               |
-| pageCount                   | `number` | `undefined`                                                                  | Number of pages                                                                                                                                                                                            |
+| totalCount                  | `number` | `undefined`                                                                  | Total result count                                                                                                                                                                                         |
 | rowsPerPage                 | `number` | `10`                                                                         | Number of rows per page                                                                                                                                                                                    |
 | selected                    | `array`  | `[]`                                                                         | Selected row                                                                                                                                                                                               |
 | descriptorAttribute         | `string` | undefined                                                                    | Attributed used to display descriptor for selected row in toolbar                                                                                                                                          |
