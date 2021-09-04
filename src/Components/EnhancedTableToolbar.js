@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useMemo } from "react";
+import React, { Fragment, useCallback } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
@@ -27,7 +27,7 @@ import {
 import MomentUtils from "@date-io/moment";
 import { Cached, CloudUpload } from "@material-ui/icons";
 import { amber, indigo } from "@material-ui/core/colors";
-import _ from "lodash";
+import get from "lodash/get";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -114,7 +114,7 @@ export default function EnhancedTableToolbar(props) {
           variant="subtitle1"
           component="div"
         >
-          {_.get(selected, descriptorAttribute)}
+          {get(selected, descriptorAttribute)}
         </Typography>
       ) : actionButtons.includes("dateFilters") ? (
         <Fragment>

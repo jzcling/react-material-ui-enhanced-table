@@ -8,6 +8,17 @@ An extended React Material UI Table that aims to make creating complex tables mo
 npm install --save @jeremyling/react-material-ui-enhanced-table
 ```
 
+The following packages are peer dependencies that must be installed for this package to work.
+
+```
+  @date-io/moment
+  @material-ui/core
+  @material-ui/icons
+  @material-ui/pickers
+  lodash
+  moment
+```
+
 ## Usage Examples
 
 Example of a collapsible table with a nested table as the collapse content.

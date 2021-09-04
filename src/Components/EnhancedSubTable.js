@@ -19,7 +19,7 @@ import {
   RotateLeft,
   Save,
 } from "@material-ui/icons";
-import _ from "lodash";
+import get from "lodash/get";
 import { indigo } from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme) => ({
@@ -69,7 +69,7 @@ export default function EnhancedSubTable(props) {
   );
 
   const data = useMemo(() => {
-    const data = _.get(row, header.arrayAttribute);
+    const data = get(row, header.arrayAttribute);
     if (header.orderBy && header.orderBy[0]) {
       return data.sort((a, b) => a.min_quantity - b.min_quantity);
     }
@@ -202,7 +202,7 @@ export default function EnhancedSubTable(props) {
                       />
                     </FormControl>
                   ) : (
-                    <div>{_.get(item, header.childLabelAttribute)}</div>
+                    <div>{get(item, header.childLabelAttribute)}</div>
                   )}
                 </td>
               ) : null}
@@ -226,7 +226,7 @@ export default function EnhancedSubTable(props) {
                           variant="outlined"
                           margin="dense"
                           id={`${getKey(header)}-${item.id || index}-2`}
-                          value={_.get(item, header.childAttribute2)}
+                          value={get(item, header.childAttribute2)}
                           onChange={(event) =>
                             handleNestedFieldChange(
                               row.id,
@@ -257,7 +257,7 @@ export default function EnhancedSubTable(props) {
                         variant="outlined"
                         margin="dense"
                         id={`${getKey(header)}-${item.id || index}`}
-                        value={_.get(item, header.childAttribute)}
+                        value={get(item, header.childAttribute)}
                         onChange={(event) =>
                           handleNestedFieldChange(
                             row.id,
@@ -281,8 +281,8 @@ export default function EnhancedSubTable(props) {
                 ) : (
                   formatContent(
                     header,
-                    _.get(item, header.childAttribute),
-                    _.get(item, header.childAttribute2) || null
+                    get(item, header.childAttribute),
+                    get(item, header.childAttribute2) || null
                   )
                 )}
               </td>

@@ -27,7 +27,7 @@ import EnhancedTableHead from "./EnhancedTableHead";
 import moment from "moment";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { grey, indigo } from "@material-ui/core/colors";
-import _ from "lodash";
+import get from "lodash/get";
 import EnhancedSubTable from "./EnhancedSubTable";
 
 const useStyles = makeStyles((theme) => ({
@@ -312,13 +312,13 @@ export default function EnhancedTable(props) {
       if (header.html) {
         content = header.html;
         header.data.forEach((item, index) => {
-          const value = _.get(data, item.attribute) || "";
+          const value = get(data, item.attribute) || "";
           content = content.replace(`{{${index}}}`, formatContent(item, value));
         });
       } else {
         content = "";
         header.data.forEach((item, index) => {
-          const value = _.get(data, item.attribute) || "";
+          const value = get(data, item.attribute) || "";
           content += formatContent(item, value);
           if (index !== header.data.length - 1) {
             content += ", ";
@@ -331,18 +331,18 @@ export default function EnhancedTable(props) {
 
     if (header.html) {
       content = header.html;
-      content = content.replace(`{{0}}`, _.get(data, header.attribute));
+      content = content.replace(`{{0}}`, get(data, header.attribute));
       return [key, content];
     }
 
-    return [key, _.get(data, header.attribute)];
+    return [key, get(data, header.attribute)];
   }
 
   const getRowSpan = (row) => {
     return headers
       .map((header) => {
         if (header.arrayAttribute) {
-          return (_.get(row, header.childAttribute) || []).length;
+          return (get(row, header.childAttribute) || []).length;
         }
         return 1;
       })
