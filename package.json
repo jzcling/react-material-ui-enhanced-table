@@ -1,6 +1,6 @@
 {
   "name": "@jeremyling/react-material-ui-enhanced-table",
-  "version": "0.3.2",
+  "version": "0.3.4",
   "scripts": {
     "build": "NODE_ENV=production rollup -c"
   },

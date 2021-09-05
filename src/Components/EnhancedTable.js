@@ -26,7 +26,7 @@ import { KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { grey, indigo } from "@material-ui/core/colors";
 import get from "lodash/get";
 import EnhancedSubTable from "./EnhancedSubTable";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -127,18 +127,18 @@ export default function EnhancedTable(props) {
     }
 
     if (header.date) {
-      return format(content, "D MMM yyyy");
+      return format(parseISO(content), "d MMM yyyy");
     }
     if (header.datetime) {
       return (
         <Fragment>
-          <div>{format(content, "D MMM yyyy")}</div>
-          <div>{format(content, "h:mm:ss a")}</div>
+          <div>{format(parseISO(content), "d MMM yyyy")}</div>
+          <div>{format(parseISO(content), "h:mm:ss a")}</div>
         </Fragment>
       );
     }
     if (header.time) {
-      return format(content, "h:mm:ss a");
+      return format(parseISO(content), "h:mm:ss a");
     }
     if (header.truncate) {
       return content.slice(0, header.truncate);
@@ -540,6 +540,7 @@ EnhancedTable.defaultProps = {
 };
 
 EnhancedTable.propTypes = {
+  title: PropTypes.string,
   rows: PropTypes.array.isRequired,
   totalCount: PropTypes.number,
   descriptorAttribute: PropTypes.string,
