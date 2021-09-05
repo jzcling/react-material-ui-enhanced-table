@@ -3,16 +3,15 @@ import PropTypes from "prop-types";
 import {
   Grid,
   IconButton,
-  makeStyles,
   TableCell,
   TableHead,
   TableRow,
   TableSortLabel,
   Tooltip,
-  useTheme,
 } from "@material-ui/core";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   visuallyHidden: {
     border: 0,
     clip: "rect(0 0 0 0)",

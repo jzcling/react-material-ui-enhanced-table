@@ -1,10 +1,8 @@
 import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import {
-  capitalize,
   FormControl,
   IconButton,
-  makeStyles,
   Table,
   TableBody,
   TableCell,
@@ -12,6 +10,8 @@ import {
   TextField,
   Tooltip,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { capitalize } from "@material-ui/core/utils";
 import {
   AddCircleOutlined,
   Cancel,

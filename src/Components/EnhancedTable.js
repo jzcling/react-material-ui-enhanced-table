@@ -9,8 +9,6 @@ import {
   CircularProgress,
   Collapse,
   IconButton,
-  lighten,
-  makeStyles,
   Paper,
   Table,
   TableBody,
@@ -20,15 +18,15 @@ import {
   TablePagination,
   TableRow,
   Tooltip,
-  useTheme,
 } from "@material-ui/core";
+import { makeStyles, lighten, useTheme } from "@material-ui/core/styles";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import EnhancedTableHead from "./EnhancedTableHead";
-import moment from "moment";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { grey, indigo } from "@material-ui/core/colors";
 import get from "lodash/get";
 import EnhancedSubTable from "./EnhancedSubTable";
+import { format } from "date-fns";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -129,18 +127,18 @@ export default function EnhancedTable(props) {
     }
 
     if (header.date) {
-      return moment(content).format("D MMM YYYY");
+      return format(content, "D MMM YYYY");
     }
     if (header.datetime) {
       return (
         <Fragment>
-          <div>{moment(content).format("D MMM YYYY")}</div>
-          <div>{moment(content).format("h:mm:ss a")}</div>
+          <div>{format(content, "D MMM YYYY")}</div>
+          <div>{format(content, "h:mm:ss a")}</div>
         </Fragment>
       );
     }
     if (header.time) {
-      return moment(content).format("h:mm:ss a");
+      return format(content, "h:mm:ss a");
     }
     if (header.truncate) {
       return content.slice(0, header.truncate);
@@ -524,8 +522,8 @@ EnhancedTable.defaultProps = {
   handleUniversalFilterChange: () => {},
   handleDateChange: () => {},
   dates: {
-    from: moment().format("YYYY-MM-DD"),
-    to: moment().format("YYYY-MM-DD"),
+    from: format(new Date(), "YYYY-MM-DD"),
+    to: format(new Date(), "YYYY-MM-DD"),
   },
   actionButtons: ["create", "edit", "delete", "filter"],
   showToolbar: true,

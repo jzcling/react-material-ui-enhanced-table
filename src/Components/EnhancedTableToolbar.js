@@ -1,31 +1,33 @@
 import React, { Fragment, useCallback } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, lighten } from "@material-ui/core/styles";
 import {
   Badge,
-  debounce,
   FormControl,
   IconButton,
   InputAdornment,
   InputLabel,
-  lighten,
   OutlinedInput,
   Toolbar,
   Tooltip,
   Typography,
 } from "@material-ui/core";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import GetAppIcon from "@material-ui/icons/GetApp";
+import { debounce } from "@material-ui/core/utils";
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-import MomentUtils from "@date-io/moment";
-import { Cached, CloudUpload } from "@material-ui/icons";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  AddCircle,
+  Cached,
+  CloudUpload,
+  Delete,
+  Edit,
+  FilterList,
+  GetApp,
+} from "@material-ui/icons";
 import { amber, indigo } from "@material-ui/core/colors";
 import get from "lodash/get";
 
@@ -118,7 +120,7 @@ export default function EnhancedTableToolbar(props) {
         </Typography>
       ) : actionButtons.includes("dateFilters") ? (
         <Fragment>
-          <MuiPickersUtilsProvider utils={MomentUtils}>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <KeyboardDatePicker
               disableToolbar
               variant="inline"
@@ -137,7 +139,7 @@ export default function EnhancedTableToolbar(props) {
               }}
             />
           </MuiPickersUtilsProvider>
-          <MuiPickersUtilsProvider utils={MomentUtils}>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <KeyboardDatePicker
               className={classes.ml1}
               disableToolbar
@@ -172,7 +174,7 @@ export default function EnhancedTableToolbar(props) {
                 className={classes.downloadButton}
                 onClick={(event) => handleActionClick(event, "download")}
               >
-                <GetAppIcon />
+                <GetApp />
               </IconButton>
             </Tooltip>
           ) : null}
@@ -183,7 +185,7 @@ export default function EnhancedTableToolbar(props) {
                 className={classes.editButton}
                 onClick={(event) => handleActionClick(event, "edit")}
               >
-                <EditIcon />
+                <Edit />
               </IconButton>
             </Tooltip>
           ) : null}
@@ -194,7 +196,7 @@ export default function EnhancedTableToolbar(props) {
                 className={classes.deleteButton}
                 onClick={(event) => handleActionClick(event, "delete")}
               >
-                <DeleteIcon />
+                <Delete />
               </IconButton>
             </Tooltip>
           ) : null}
@@ -232,7 +234,7 @@ export default function EnhancedTableToolbar(props) {
                 className={classes.editButton}
                 onClick={(event) => handleActionClick(event, "bulkEdit")}
               >
-                <EditIcon />
+                <Edit />
               </IconButton>
             </Tooltip>
           )}
@@ -243,7 +245,7 @@ export default function EnhancedTableToolbar(props) {
                 className={classes.createButton}
                 onClick={(event) => handleActionClick(event, "create")}
               >
-                <AddCircleIcon />
+                <AddCircle />
               </IconButton>
             </Tooltip>
           )}
@@ -258,7 +260,7 @@ export default function EnhancedTableToolbar(props) {
                 startAdornment={
                   <InputAdornment position="start">
                     <Tooltip title="Filter">
-                      <FilterListIcon />
+                      <FilterList />
                     </Tooltip>
                   </InputAdornment>
                 }
