@@ -126,7 +126,7 @@ export default function EnhancedTableToolbar(props) {
               variant="inline"
               inputVariant="outlined"
               margin="dense"
-              format="DD/MM/YYYY"
+              format="dd/MM/yyyy"
               id="date-from"
               label="From"
               value={dates.from || null}
@@ -146,7 +146,7 @@ export default function EnhancedTableToolbar(props) {
               variant="inline"
               inputVariant="outlined"
               margin="dense"
-              format="DD/MM/YYYY"
+              format="dd/MM/yyyy"
               id="date-to"
               label="To"
               value={dates.to || null}

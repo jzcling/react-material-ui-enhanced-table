@@ -127,12 +127,12 @@ export default function EnhancedTable(props) {
     }
 
     if (header.date) {
-      return format(content, "D MMM YYYY");
+      return format(content, "D MMM yyyy");
     }
     if (header.datetime) {
       return (
         <Fragment>
-          <div>{format(content, "D MMM YYYY")}</div>
+          <div>{format(content, "D MMM yyyy")}</div>
           <div>{format(content, "h:mm:ss a")}</div>
         </Fragment>
       );
@@ -522,8 +522,8 @@ EnhancedTable.defaultProps = {
   handleUniversalFilterChange: () => {},
   handleDateChange: () => {},
   dates: {
-    from: format(new Date(), "YYYY-MM-DD"),
-    to: format(new Date(), "YYYY-MM-DD"),
+    from: format(new Date(), "yyyy-MM-dd"),
+    to: format(new Date(), "yyyy-MM-dd"),
   },
   actionButtons: ["create", "edit", "delete", "filter"],
   showToolbar: true,
