@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback } from "react";
+import React, { Fragment, useMemo } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
 import { makeStyles, lighten } from "@material-ui/core/styles";
@@ -93,8 +93,8 @@ export default function EnhancedTableToolbar(props) {
   } = props;
   const classes = useStyles();
 
-  const debouncedHandler = useCallback(
-    debounce((event) => handleUniversalFilterChange(event), 700),
+  const debouncedHandler = useMemo(
+    () => debounce((event) => handleUniversalFilterChange(event), 700),
     []
   );
 
