@@ -9,39 +9,57 @@ import {
   TableRow,
   TextField,
   Tooltip,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { capitalize } from "@material-ui/core/utils";
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { capitalize } from "@mui/material/utils";
 import {
   AddCircleOutlined,
   Cancel,
   Edit,
   RotateLeft,
   Save,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import get from "lodash/get";
-import { indigo } from "@material-ui/core/colors";
+import { indigo } from "@mui/material/colors";
 
-const useStyles = makeStyles((theme) => ({
-  cell: {
+const PREFIX = "EnhancedSubTable";
+
+const classes = {
+  cell: `${PREFIX}-cell`,
+  nestedTextField: `${PREFIX}-nestedTextField`,
+  mt0: `${PREFIX}-mt0`,
+  createButton: `${PREFIX}-createButton`,
+  editButton: `${PREFIX}-editButton`,
+  deleteButton: `${PREFIX}-deleteButton`,
+  saveButton: `${PREFIX}-saveButton`,
+};
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${classes.cell}`]: {
     minWidth: "180px",
   },
-  nestedTextField: {
+
+  [`& .${classes.nestedTextField}`]: {
     minWidth: "80px",
   },
-  mt0: {
+
+  [`& .${classes.mt0}`]: {
     marginTop: 0,
   },
-  createButton: {
+
+  [`& .${classes.createButton}`]: {
     color: theme.palette.success.main,
   },
-  editButton: {
+
+  [`& .${classes.editButton}`]: {
     color: indigo[500],
   },
-  deleteButton: {
+
+  [`& .${classes.deleteButton}`]: {
     color: theme.palette.error.main,
   },
-  saveButton: {
+
+  [`& .${classes.saveButton}`]: {
     color: indigo[400],
   },
 }));
@@ -59,7 +77,6 @@ export default function EnhancedSubTable(props) {
     nestedRowAction,
     formatContent,
   } = props;
-  const classes = useStyles();
 
   const editing = useMemo(
     () =>
@@ -77,7 +94,7 @@ export default function EnhancedSubTable(props) {
   }, [row, header]);
 
   return (
-    <TableCell
+    <StyledTableCell
       key={`${getKey(header)}-${row.id}`}
       onClick={(event) => event.stopPropagation()}
       className={classes.cell}
@@ -104,6 +121,7 @@ export default function EnhancedSubTable(props) {
                         onClick={(event) =>
                           handleNestedAction(event, "reset", row, header.key)
                         }
+                        size="large"
                       >
                         <RotateLeft />
                       </IconButton>
@@ -118,6 +136,7 @@ export default function EnhancedSubTable(props) {
                         onClick={(event) =>
                           handleNestedAction(event, "save", row, header.key)
                         }
+                        size="large"
                       >
                         <Save />
                       </IconButton>
@@ -133,6 +152,7 @@ export default function EnhancedSubTable(props) {
                         onClick={(event) =>
                           handleNestedAction(event, "edit", row, header.key)
                         }
+                        size="large"
                       >
                         <Edit />
                       </IconButton>
@@ -147,6 +167,7 @@ export default function EnhancedSubTable(props) {
                         onClick={(event) =>
                           handleNestedAction(event, "add", row, header.key)
                         }
+                        size="large"
                       >
                         <AddCircleOutlined />
                       </IconButton>
@@ -303,6 +324,7 @@ export default function EnhancedSubTable(props) {
                           index
                         )
                       }
+                      size="large"
                     >
                       <Cancel />
                     </IconButton>
@@ -313,7 +335,7 @@ export default function EnhancedSubTable(props) {
           ))}
         </TableBody>
       </Table>
-    </TableCell>
+    </StyledTableCell>
   );
 }
 

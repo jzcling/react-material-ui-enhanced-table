@@ -11,10 +11,9 @@ npm install --save @jeremyling/react-material-ui-enhanced-table
 The following packages are peer dependencies that must be installed for this package to work.
 
 ```
-  @date-io/date-fns
-  @material-ui/core
-  @material-ui/icons
-  @material-ui/pickers
+  @mui/material
+  @mui/icons-material
+  @mui/lab
   date-fns
   lodash
 ```
@@ -26,14 +25,8 @@ Example of a collapsible table with a nested table as the collapse content.
 ```jsx
 import React, { useEffect, useState } from "react";
 import EnhancedTable from "@jeremyling/react-material-ui-enhanced-table";
-import {
-  amber,
-  green,
-  indigo,
-  lightGreen,
-  red,
-} from "@material-ui/core/colors";
-import { Block, MoveToInbox } from "@material-ui/icons";
+import { amber, green, indigo, lightGreen, red } from "@mui/material/colors";
+import { Block, MoveToInbox } from "@mui/icons-material";
 
 export default function Orders(props) {
   const [data, setData] = useState([]);
@@ -308,7 +301,7 @@ Example with a nested table within each row
 ```jsx
 import React, { useEffect, useState } from "react";
 import EnhancedTable from "@jeremyling/react-material-ui-enhanced-table";
-import { green, red } from "@material-ui/core/colors";
+import { green, red } from "@mui/material/colors";
 
 export default function Products(props) {
   const [data, setData] = useState([]);

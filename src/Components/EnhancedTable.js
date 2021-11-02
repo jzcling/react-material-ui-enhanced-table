@@ -18,38 +18,56 @@ import {
   TablePagination,
   TableRow,
   Tooltip,
-} from "@material-ui/core";
-import { makeStyles, lighten, useTheme } from "@material-ui/core/styles";
+} from "@mui/material";
+import { lighten, useTheme, styled } from "@mui/material/styles";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import EnhancedTableHead from "./EnhancedTableHead";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
-import { grey, indigo } from "@material-ui/core/colors";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import { grey, indigo } from "@mui/material/colors";
 import get from "lodash/get";
 import EnhancedSubTable from "./EnhancedSubTable";
 import { format, parseISO } from "date-fns";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const PREFIX = "EnhancedTable";
+
+const classes = {
+  root: `${PREFIX}-root`,
+  paper: `${PREFIX}-paper`,
+  table: `${PREFIX}-table`,
+  nestedTextField: `${PREFIX}-nestedTextField`,
+  disabled: `${PREFIX}-disabled`,
+  cursorPointer: `${PREFIX}-cursorPointer`,
+  backdrop: `${PREFIX}-backdrop`,
+};
+
+const Root = styled("div")(({ theme }) => ({
+  [`& .${classes.root}`]: {
     width: "100%",
   },
-  paper: {
+
+  [`& .${classes.paper}`]: {
     position: "relative",
     width: "100%",
     marginBottom: theme.spacing(2),
   },
-  table: {
+
+  [`& .${classes.table}`]: {
     // minWidth: 750,
   },
-  nestedTextField: {
+
+  [`& .${classes.nestedTextField}`]: {
     minWidth: "80px",
   },
-  disabled: {
+
+  [`& .${classes.disabled}`]: {
     opacity: 0.3,
   },
-  cursorPointer: {
+
+  [`& .${classes.cursorPointer}`]: {
     cursor: "pointer",
   },
-  backdrop: {
+
+  [`& .${classes.backdrop}`]: {
     zIndex: theme.zIndex.modal + 1,
     color: "#fff",
     position: "absolute",
@@ -98,7 +116,7 @@ export default function EnhancedTable(props) {
     selectibleRows,
     identifier,
   } = props;
-  const classes = useStyles();
+
   const theme = useTheme();
 
   function isSelected(row) {
@@ -132,7 +150,7 @@ export default function EnhancedTable(props) {
     if (header.datetime) {
       return (
         <Fragment>
-          <div>{format(parseISO(content), "d MMM yyyy")}</div>
+          <Root>{format(parseISO(content), "d MMM yyyy")}</Root>
           <div>{format(parseISO(content), "h:mm:ss a")}</div>
         </Fragment>
       );
@@ -242,6 +260,7 @@ export default function EnhancedTable(props) {
                         action.disableCondition(data)) ||
                       isDisabled(data)
                     }
+                    size="large"
                   >
                     {action.icon}
                   </IconButton>

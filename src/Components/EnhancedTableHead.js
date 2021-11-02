@@ -8,11 +8,17 @@ import {
   TableRow,
   TableSortLabel,
   Tooltip,
-} from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+} from "@mui/material";
+import { useTheme, styled } from "@mui/material/styles";
 
-const useStyles = makeStyles(() => ({
-  visuallyHidden: {
+const PREFIX = "EnhancedTableHead";
+
+const classes = {
+  visuallyHidden: `${PREFIX}-visuallyHidden`,
+};
+
+const StyledTableHead = styled(TableHead)(() => ({
+  [`& .${classes.visuallyHidden}`]: {
     border: 0,
     clip: "rect(0 0 0 0)",
     height: 1,
@@ -27,7 +33,7 @@ const useStyles = makeStyles(() => ({
 
 export default function EnhancedTableHead(props) {
   const { headers, order, orderBy, onRequestSort } = props;
-  const classes = useStyles();
+
   const theme = useTheme();
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -64,7 +70,7 @@ export default function EnhancedTableHead(props) {
   }
 
   return (
-    <TableHead>
+    <StyledTableHead>
       <TableRow>
         {headers.map((header) => (
           <TableCell
@@ -93,7 +99,7 @@ export default function EnhancedTableHead(props) {
           </TableCell>
         ))}
       </TableRow>
-    </TableHead>
+    </StyledTableHead>
   );
 }
 

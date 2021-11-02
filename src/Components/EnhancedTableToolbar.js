@@ -1,7 +1,7 @@
 import React, { Fragment, useMemo } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
-import { makeStyles, lighten } from "@material-ui/core/styles";
+import { lighten, styled } from "@mui/material/styles";
 import {
   Badge,
   FormControl,
@@ -12,13 +12,10 @@ import {
   Toolbar,
   Tooltip,
   Typography,
-} from "@material-ui/core";
-import { debounce } from "@material-ui/core/utils";
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
+} from "@mui/material";
+import { debounce } from "@mui/material/utils";
+import { DatePicker, LocalizationProvider } from "@mui/lab";
+import DateAdapter from "@mui/lab/AdapterDateFns";
 import {
   AddCircle,
   Cached,
@@ -27,17 +24,35 @@ import {
   Edit,
   FilterList,
   GetApp,
-} from "@material-ui/icons";
-import { amber, indigo } from "@material-ui/core/colors";
+} from "@mui/icons-material";
+import { amber, indigo } from "@mui/material/colors";
 import get from "lodash/get";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const PREFIX = "EnhancedTableToolbar";
+
+const classes = {
+  root: `${PREFIX}-root`,
+  highlight: `${PREFIX}-highlight`,
+  title: `${PREFIX}-title`,
+  grow: `${PREFIX}-grow`,
+  pr0: `${PREFIX}-pr0`,
+  ml1: `${PREFIX}-ml1`,
+  createButton: `${PREFIX}-createButton`,
+  editButton: `${PREFIX}-editButton`,
+  deleteButton: `${PREFIX}-deleteButton`,
+  refreshButton: `${PREFIX}-refreshButton`,
+  downloadButton: `${PREFIX}-downloadButton`,
+  importButton: `${PREFIX}-importButton`,
+};
+
+const StyledToolbar = styled(Toolbar)(({ theme }) => ({
+  [`&.${classes.root}`]: {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(1),
   },
-  highlight:
-    theme.palette.type === "light"
+
+  [`&.${classes.highlight}`]:
+    theme.palette.mode === "light"
       ? {
           color: theme.palette.secondary.main,
           backgroundColor: lighten(theme.palette.secondary.light, 0.85),
@@ -46,34 +61,44 @@ const useStyles = makeStyles((theme) => ({
           color: theme.palette.text.primary,
           backgroundColor: theme.palette.secondary.dark,
         },
-  title: {
+
+  [`& .${classes.title}`]: {
     flex: "1 1 100%",
   },
-  grow: {
+
+  [`& .${classes.grow}`]: {
     flexGrow: 1,
   },
-  pr0: {
+
+  [`& .${classes.pr0}`]: {
     paddingRight: 0,
   },
-  ml1: {
+
+  [`& .${classes.ml1}`]: {
     marginLeft: theme.spacing(1),
   },
-  createButton: {
+
+  [`& .${classes.createButton}`]: {
     color: theme.palette.success.main,
   },
-  editButton: {
+
+  [`& .${classes.editButton}`]: {
     color: indigo[500],
   },
-  deleteButton: {
+
+  [`& .${classes.deleteButton}`]: {
     color: theme.palette.error.main,
   },
-  refreshButton: {
+
+  [`& .${classes.refreshButton}`]: {
     color: indigo[400],
   },
-  downloadButton: {
+
+  [`& .${classes.downloadButton}`]: {
     color: indigo[400],
   },
-  importButton: {
+
+  [`& .${classes.importButton}`]: {
     color: amber[600],
   },
 }));
@@ -91,7 +116,6 @@ export default function EnhancedTableToolbar(props) {
     refreshBadgeCount,
     disableSelection,
   } = props;
-  const classes = useStyles();
 
   const debouncedHandler = useMemo(
     () => debounce((event) => handleUniversalFilterChange(event), 700),
@@ -103,7 +127,7 @@ export default function EnhancedTableToolbar(props) {
   };
 
   return (
-    <Toolbar
+    <StyledToolbar
       className={clsx(classes.root, {
         [classes.highlight]:
           !disableSelection && Object.keys(selected).length > 0,
@@ -120,8 +144,8 @@ export default function EnhancedTableToolbar(props) {
         </Typography>
       ) : actionButtons.includes("dateFilters") ? (
         <Fragment>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
+          <LocalizationProvider dateAdapter={DateAdapter}>
+            <DatePicker
               disableToolbar
               variant="inline"
               inputVariant="outlined"
@@ -138,9 +162,9 @@ export default function EnhancedTableToolbar(props) {
                 className: classes.pr0,
               }}
             />
-          </MuiPickersUtilsProvider>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
+          </LocalizationProvider>
+          <LocalizationProvider dateAdapter={DateAdapter}>
+            <DatePicker
               className={classes.ml1}
               disableToolbar
               variant="inline"
@@ -158,7 +182,7 @@ export default function EnhancedTableToolbar(props) {
                 className: classes.pr0,
               }}
             />
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
           <div className={classes.grow} />
         </Fragment>
       ) : (
@@ -173,6 +197,7 @@ export default function EnhancedTableToolbar(props) {
                 aria-label="download"
                 className={classes.downloadButton}
                 onClick={(event) => handleActionClick(event, "download")}
+                size="large"
               >
                 <GetApp />
               </IconButton>
@@ -184,6 +209,7 @@ export default function EnhancedTableToolbar(props) {
                 aria-label="edit"
                 className={classes.editButton}
                 onClick={(event) => handleActionClick(event, "edit")}
+                size="large"
               >
                 <Edit />
               </IconButton>
@@ -195,6 +221,7 @@ export default function EnhancedTableToolbar(props) {
                 aria-label="delete"
                 className={classes.deleteButton}
                 onClick={(event) => handleActionClick(event, "delete")}
+                size="large"
               >
                 <Delete />
               </IconButton>
@@ -209,6 +236,7 @@ export default function EnhancedTableToolbar(props) {
                 aria-label="refresh"
                 className={classes.refreshButton}
                 onClick={(event) => handleActionClick(event, "refresh")}
+                size="large"
               >
                 <Badge badgeContent={refreshBadgeCount} color="error">
                   <Cached />
@@ -222,6 +250,7 @@ export default function EnhancedTableToolbar(props) {
                 aria-label="import"
                 className={classes.importButton}
                 onClick={(event) => handleActionClick(event, "import")}
+                size="large"
               >
                 <CloudUpload />
               </IconButton>
@@ -233,6 +262,7 @@ export default function EnhancedTableToolbar(props) {
                 aria-label="bulk-edit"
                 className={classes.editButton}
                 onClick={(event) => handleActionClick(event, "bulkEdit")}
+                size="large"
               >
                 <Edit />
               </IconButton>
@@ -244,6 +274,7 @@ export default function EnhancedTableToolbar(props) {
                 aria-label="create"
                 className={classes.createButton}
                 onClick={(event) => handleActionClick(event, "create")}
+                size="large"
               >
                 <AddCircle />
               </IconButton>
@@ -270,7 +301,7 @@ export default function EnhancedTableToolbar(props) {
           )}
         </Fragment>
       )}
-    </Toolbar>
+    </StyledToolbar>
   );
 }
 
