@@ -9,6 +9,7 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
+  TextField,
   Toolbar,
   Tooltip,
   Typography,
@@ -146,18 +147,14 @@ export default function EnhancedTableToolbar(props) {
         <Fragment>
           <LocalizationProvider dateAdapter={DateAdapter}>
             <DatePicker
-              disableToolbar
-              variant="inline"
-              inputVariant="outlined"
-              margin="dense"
-              format="dd/MM/yyyy"
+              inputFormat="dd/MM/yyyy"
               id="date-from"
               label="From"
               value={dates.from || null}
               onChange={(value) => handleDateChange("from", value)}
-              KeyboardButtonProps={{
-                "aria-label": "Date From",
-              }}
+              renderInput={(params) => (
+                <TextField fullWidth size="small" {...params} />
+              )}
               InputProps={{
                 className: classes.pr0,
               }}
@@ -166,18 +163,14 @@ export default function EnhancedTableToolbar(props) {
           <LocalizationProvider dateAdapter={DateAdapter}>
             <DatePicker
               className={classes.ml1}
-              disableToolbar
-              variant="inline"
-              inputVariant="outlined"
-              margin="dense"
-              format="dd/MM/yyyy"
+              inputFormat="dd/MM/yyyy"
               id="date-to"
               label="To"
               value={dates.to || null}
               onChange={(value) => handleDateChange("to", value)}
-              KeyboardButtonProps={{
-                "aria-label": "Date To",
-              }}
+              renderInput={(params) => (
+                <TextField fullWidth size="small" {...params} />
+              )}
               InputProps={{
                 className: classes.pr0,
               }}
