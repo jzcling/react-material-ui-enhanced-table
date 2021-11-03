@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {
+  Box,
   Grid,
   IconButton,
   TableCell,
@@ -9,27 +10,7 @@ import {
   TableSortLabel,
   Tooltip,
 } from "@mui/material";
-import { useTheme, styled } from "@mui/material/styles";
-
-const PREFIX = "EnhancedTableHead";
-
-const classes = {
-  visuallyHidden: `${PREFIX}-visuallyHidden`,
-};
-
-const StyledTableHead = styled(TableHead)(() => ({
-  [`& .${classes.visuallyHidden}`]: {
-    border: 0,
-    clip: "rect(0 0 0 0)",
-    height: 1,
-    margin: -1,
-    overflow: "hidden",
-    padding: 0,
-    position: "absolute",
-    top: 20,
-    width: 1,
-  },
-}));
+import { useTheme } from "@mui/material/styles";
 
 export default function EnhancedTableHead(props) {
   const { headers, order, orderBy, onRequestSort } = props;
@@ -70,7 +51,7 @@ export default function EnhancedTableHead(props) {
   }
 
   return (
-    <StyledTableHead>
+    <TableHead>
       <TableRow>
         {headers.map((header) => (
           <TableCell
@@ -86,11 +67,24 @@ export default function EnhancedTableHead(props) {
               >
                 {getLabel(header)}
                 {orderBy === header.attribute ? (
-                  <span className={classes.visuallyHidden}>
+                  <Box
+                    component="div"
+                    sx={{
+                      border: 0,
+                      clip: "rect(0 0 0 0)",
+                      height: 1,
+                      margin: -1,
+                      overflow: "hidden",
+                      padding: 0,
+                      position: "absolute",
+                      top: 20,
+                      width: 1,
+                    }}
+                  >
                     {order === "desc"
                       ? "sorted descending"
                       : "sorted ascending"}
-                  </span>
+                  </Box>
                 ) : null}
               </TableSortLabel>
             ) : (
@@ -99,7 +93,7 @@ export default function EnhancedTableHead(props) {
           </TableCell>
         ))}
       </TableRow>
-    </StyledTableHead>
+    </TableHead>
   );
 }
 

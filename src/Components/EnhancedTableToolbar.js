@@ -1,9 +1,9 @@
 import React, { Fragment, useMemo } from "react";
-import clsx from "clsx";
 import PropTypes from "prop-types";
-import { lighten, styled } from "@mui/material/styles";
+import { lighten } from "@mui/material/styles";
 import {
   Badge,
+  Box,
   FormControl,
   IconButton,
   InputAdornment,
@@ -29,75 +29,24 @@ import {
 import { amber, indigo } from "@mui/material/colors";
 import get from "lodash/get";
 
-const PREFIX = "EnhancedTableToolbar";
-
-const classes = {
-  root: `${PREFIX}-root`,
-  highlight: `${PREFIX}-highlight`,
-  title: `${PREFIX}-title`,
-  grow: `${PREFIX}-grow`,
-  ml1: `${PREFIX}-ml1`,
-  createButton: `${PREFIX}-createButton`,
-  editButton: `${PREFIX}-editButton`,
-  deleteButton: `${PREFIX}-deleteButton`,
-  refreshButton: `${PREFIX}-refreshButton`,
-  downloadButton: `${PREFIX}-downloadButton`,
-  importButton: `${PREFIX}-importButton`,
+const rootStyle = (disableSelection, selected) => {
+  var style = {
+    pl: 2,
+    pr: 1,
+  };
+  if (!disableSelection && Object.keys(selected).length > 0) {
+    style = {
+      ...style,
+      color: (theme) =>
+        theme.palette.mode === "light" ? "secondary.main" : "text.primary",
+      backgroundColor: (theme) =>
+        theme.palette.mode === "light"
+          ? lighten(theme.palette.secondary.light, 0.85)
+          : "secondary.dark",
+    };
+  }
+  return style;
 };
-
-const StyledToolbar = styled(Toolbar)(({ theme }) => ({
-  [`&.${classes.root}`]: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1),
-  },
-
-  [`&.${classes.highlight}`]:
-    theme.palette.mode === "light"
-      ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
-      : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
-
-  [`& .${classes.title}`]: {
-    flex: "1 1 100%",
-  },
-
-  [`& .${classes.grow}`]: {
-    flexGrow: 1,
-  },
-
-  [`& .${classes.ml1}`]: {
-    marginLeft: theme.spacing(1),
-  },
-
-  [`& .${classes.createButton}`]: {
-    color: theme.palette.success.main,
-  },
-
-  [`& .${classes.editButton}`]: {
-    color: indigo[500],
-  },
-
-  [`& .${classes.deleteButton}`]: {
-    color: theme.palette.error.main,
-  },
-
-  [`& .${classes.refreshButton}`]: {
-    color: indigo[400],
-  },
-
-  [`& .${classes.downloadButton}`]: {
-    color: indigo[400],
-  },
-
-  [`& .${classes.importButton}`]: {
-    color: amber[600],
-  },
-}));
 
 export default function EnhancedTableToolbar(props) {
   const {
@@ -123,15 +72,10 @@ export default function EnhancedTableToolbar(props) {
   };
 
   return (
-    <StyledToolbar
-      className={clsx(classes.root, {
-        [classes.highlight]:
-          !disableSelection && Object.keys(selected).length > 0,
-      })}
-    >
+    <Toolbar sx={rootStyle(disableSelection, selected)}>
       {!disableSelection && Object.keys(selected).length > 0 ? (
         <Typography
-          className={classes.title}
+          sx={{ flex: "1 1 100%" }}
           color="inherit"
           variant="subtitle1"
           component="div"
@@ -152,7 +96,7 @@ export default function EnhancedTableToolbar(props) {
           </LocalizationProvider>
           <LocalizationProvider dateAdapter={DateAdapter}>
             <DatePicker
-              className={classes.ml1}
+              sx={{ ml: 1 }}
               inputFormat="dd/MM/yyyy"
               id="date-to"
               label="To"
@@ -161,10 +105,10 @@ export default function EnhancedTableToolbar(props) {
               renderInput={(params) => <TextField size="small" {...params} />}
             />
           </LocalizationProvider>
-          <div className={classes.grow} />
+          <Box sx={{ flexGrow: 1 }} />
         </Fragment>
       ) : (
-        <div className={classes.grow} />
+        <Box sx={{ flexGrow: 1 }} />
       )}
 
       {!disableSelection && Object.keys(selected).length > 0 ? (
@@ -173,7 +117,7 @@ export default function EnhancedTableToolbar(props) {
             <Tooltip title="Download">
               <IconButton
                 aria-label="download"
-                className={classes.downloadButton}
+                sx={{ color: indigo[400] }}
                 onClick={(event) => handleActionClick(event, "download")}
                 size="large"
               >
@@ -185,7 +129,7 @@ export default function EnhancedTableToolbar(props) {
             <Tooltip title="Edit">
               <IconButton
                 aria-label="edit"
-                className={classes.editButton}
+                sx={{ color: indigo[500] }}
                 onClick={(event) => handleActionClick(event, "edit")}
                 size="large"
               >
@@ -197,7 +141,7 @@ export default function EnhancedTableToolbar(props) {
             <Tooltip title="Delete">
               <IconButton
                 aria-label="delete"
-                className={classes.deleteButton}
+                sx={{ color: "error.main" }}
                 onClick={(event) => handleActionClick(event, "delete")}
                 size="large"
               >
@@ -212,7 +156,7 @@ export default function EnhancedTableToolbar(props) {
             <Tooltip title="Refresh">
               <IconButton
                 aria-label="refresh"
-                className={classes.refreshButton}
+                sx={{ color: indigo[400] }}
                 onClick={(event) => handleActionClick(event, "refresh")}
                 size="large"
               >
@@ -226,7 +170,7 @@ export default function EnhancedTableToolbar(props) {
             <Tooltip title="Import">
               <IconButton
                 aria-label="import"
-                className={classes.importButton}
+                sx={{ color: amber[600] }}
                 onClick={(event) => handleActionClick(event, "import")}
                 size="large"
               >
@@ -238,7 +182,7 @@ export default function EnhancedTableToolbar(props) {
             <Tooltip title="Bulk Edit">
               <IconButton
                 aria-label="bulk-edit"
-                className={classes.editButton}
+                sx={{ color: indigo[500] }}
                 onClick={(event) => handleActionClick(event, "bulkEdit")}
                 size="large"
               >
@@ -250,7 +194,7 @@ export default function EnhancedTableToolbar(props) {
             <Tooltip title="Create">
               <IconButton
                 aria-label="create"
-                className={classes.createButton}
+                sx={{ color: "success.main" }}
                 onClick={(event) => handleActionClick(event, "create")}
                 size="large"
               >
@@ -279,7 +223,7 @@ export default function EnhancedTableToolbar(props) {
           )}
         </Fragment>
       )}
-    </StyledToolbar>
+    </Toolbar>
   );
 }
 

@@ -10,7 +10,6 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { capitalize } from "@mui/material/utils";
 import {
   AddCircleOutlined,
@@ -21,48 +20,6 @@ import {
 } from "@mui/icons-material";
 import get from "lodash/get";
 import { indigo } from "@mui/material/colors";
-
-const PREFIX = "EnhancedSubTable";
-
-const classes = {
-  cell: `${PREFIX}-cell`,
-  nestedTextField: `${PREFIX}-nestedTextField`,
-  mt0: `${PREFIX}-mt0`,
-  createButton: `${PREFIX}-createButton`,
-  editButton: `${PREFIX}-editButton`,
-  deleteButton: `${PREFIX}-deleteButton`,
-  saveButton: `${PREFIX}-saveButton`,
-};
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${classes.cell}`]: {
-    minWidth: "180px",
-  },
-
-  [`& .${classes.nestedTextField}`]: {
-    minWidth: "80px",
-  },
-
-  [`& .${classes.mt0}`]: {
-    marginTop: 0,
-  },
-
-  [`& .${classes.createButton}`]: {
-    color: theme.palette.success.main,
-  },
-
-  [`& .${classes.editButton}`]: {
-    color: indigo[500],
-  },
-
-  [`& .${classes.deleteButton}`]: {
-    color: theme.palette.error.main,
-  },
-
-  [`& .${classes.saveButton}`]: {
-    color: indigo[400],
-  },
-}));
 
 function getKey(header) {
   return header.key || header.attribute;
@@ -94,10 +51,10 @@ export default function EnhancedSubTable(props) {
   }, [row, header]);
 
   return (
-    <StyledTableCell
+    <TableCell
       key={`${getKey(header)}-${row.id}`}
       onClick={(event) => event.stopPropagation()}
-      className={classes.cell}
+      sx={{ minWidth: "180px" }}
     >
       <Table>
         <TableBody>
@@ -116,7 +73,6 @@ export default function EnhancedSubTable(props) {
                     <Tooltip title="Reset">
                       <IconButton
                         edge="end"
-                        className={classes.reset}
                         aria-label="reset"
                         onClick={(event) =>
                           handleNestedAction(event, "reset", row, header.key)
@@ -131,7 +87,7 @@ export default function EnhancedSubTable(props) {
                     <Tooltip title="Save">
                       <IconButton
                         edge="end"
-                        className={classes.saveButton}
+                        sx={{ color: indigo[400] }}
                         aria-label="save"
                         onClick={(event) =>
                           handleNestedAction(event, "save", row, header.key)
@@ -147,7 +103,7 @@ export default function EnhancedSubTable(props) {
                     <Tooltip title="Edit">
                       <IconButton
                         edge="end"
-                        className={classes.editButton}
+                        sx={{ color: indigo[500] }}
                         aria-label="edit"
                         onClick={(event) =>
                           handleNestedAction(event, "edit", row, header.key)
@@ -162,7 +118,7 @@ export default function EnhancedSubTable(props) {
                     <Tooltip title="Add">
                       <IconButton
                         edge="end"
-                        className={classes.createButton}
+                        sx={{ color: "success.main" }}
                         aria-label="add"
                         onClick={(event) =>
                           handleNestedAction(event, "add", row, header.key)
@@ -197,15 +153,11 @@ export default function EnhancedSubTable(props) {
                   align="left"
                 >
                   {editing ? (
-                    <FormControl
-                      variant="outlined"
-                      className={classes.nestedTextField}
-                    >
+                    <FormControl variant="outlined" sx={{ minWidth: "80px" }}>
                       <TextField
-                        className={classes.mt0}
                         fullWidth
                         variant="outlined"
-                        margin="dense"
+                        size="small"
                         id={`${getKey(header)}-${item.id || index}-label`}
                         value={item[header.childLabelAttribute]}
                         onChange={(event) =>
@@ -239,13 +191,12 @@ export default function EnhancedSubTable(props) {
                         style={{
                           marginRight: "2px",
                         }}
-                        className={classes.nestedTextField}
+                        sx={{ minWidth: "80px" }}
                       >
                         <TextField
-                          className={classes.mt0}
                           fullWidth
                           variant="outlined"
-                          margin="dense"
+                          size="small"
                           id={`${getKey(header)}-${item.id || index}-2`}
                           value={get(item, header.childAttribute2)}
                           onChange={(event) =>
@@ -268,15 +219,11 @@ export default function EnhancedSubTable(props) {
                         />
                       </FormControl>
                     ) : null}
-                    <FormControl
-                      variant="outlined"
-                      className={classes.nestedTextField}
-                    >
+                    <FormControl variant="outlined" sx={{ minWidth: "80px" }}>
                       <TextField
-                        className={classes.mt0}
                         fullWidth
                         variant="outlined"
-                        margin="dense"
+                        size="small"
                         id={`${getKey(header)}-${item.id || index}`}
                         value={get(item, header.childAttribute)}
                         onChange={(event) =>
@@ -312,7 +259,7 @@ export default function EnhancedSubTable(props) {
                   <Tooltip title="Delete">
                     <IconButton
                       edge="end"
-                      className={classes.deleteButton}
+                      sx={{ color: "error.main" }}
                       aria-label="delete"
                       onClick={(event) =>
                         handleNestedAction(
@@ -335,7 +282,7 @@ export default function EnhancedSubTable(props) {
           ))}
         </TableBody>
       </Table>
-    </StyledTableCell>
+    </TableCell>
   );
 }
 

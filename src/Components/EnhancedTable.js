@@ -1,6 +1,5 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
-import clsx from "clsx";
 import {
   Backdrop,
   Box,
@@ -19,7 +18,7 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import { lighten, useTheme, styled } from "@mui/material/styles";
+import { lighten, useTheme } from "@mui/material/styles";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import EnhancedTableHead from "./EnhancedTableHead";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
@@ -27,52 +26,6 @@ import { grey, indigo } from "@mui/material/colors";
 import get from "lodash/get";
 import EnhancedSubTable from "./EnhancedSubTable";
 import { format, parseISO } from "date-fns";
-
-const PREFIX = "EnhancedTable";
-
-const classes = {
-  root: `${PREFIX}-root`,
-  paper: `${PREFIX}-paper`,
-  table: `${PREFIX}-table`,
-  nestedTextField: `${PREFIX}-nestedTextField`,
-  disabled: `${PREFIX}-disabled`,
-  cursorPointer: `${PREFIX}-cursorPointer`,
-  backdrop: `${PREFIX}-backdrop`,
-};
-
-const Root = styled("div")(({ theme }) => ({
-  [`& .${classes.root}`]: {
-    width: "100%",
-  },
-
-  [`& .${classes.paper}`]: {
-    position: "relative",
-    width: "100%",
-    marginBottom: theme.spacing(2),
-  },
-
-  [`& .${classes.table}`]: {
-    // minWidth: 750,
-  },
-
-  [`& .${classes.nestedTextField}`]: {
-    minWidth: "80px",
-  },
-
-  [`& .${classes.disabled}`]: {
-    opacity: 0.3,
-  },
-
-  [`& .${classes.cursorPointer}`]: {
-    cursor: "pointer",
-  },
-
-  [`& .${classes.backdrop}`]: {
-    zIndex: theme.zIndex.modal + 1,
-    color: "#fff",
-    position: "absolute",
-  },
-}));
 
 function getKey(header) {
   return header.key || header.attribute;
@@ -150,7 +103,7 @@ export default function EnhancedTable(props) {
     if (header.datetime) {
       return (
         <Fragment>
-          <Root>{format(parseISO(content), "d MMM yyyy")}</Root>
+          <div>{format(parseISO(content), "d MMM yyyy")}</div>
           <div>{format(parseISO(content), "h:mm:ss a")}</div>
         </Fragment>
       );
@@ -367,8 +320,8 @@ export default function EnhancedTable(props) {
   };
 
   return (
-    <div className={classes.root}>
-      <Paper className={classes.paper}>
+    <Box sx={{ width: "100%" }}>
+      <Paper sx={{ position: "relative", width: "100%", mb: 2 }}>
         {showToolbar ? (
           <EnhancedTableToolbar
             selected={selected.length > 0 ? selected[0] : {}}
@@ -387,7 +340,6 @@ export default function EnhancedTable(props) {
         ) : null}
         <TableContainer>
           <Table
-            className={classes.table}
             aria-labelledby="tableTitle"
             size={dense ? "small" : "medium"}
             aria-label={title}
@@ -424,10 +376,10 @@ export default function EnhancedTable(props) {
                       tabIndex={-1}
                       selected={isItemSelected}
                       rowSpan={getRowSpan(row)}
-                      className={clsx({
-                        [classes.cursorPointer]: isSelectible(row),
-                        [classes.disabled]: isDisabled(row),
-                      })}
+                      sx={{
+                        opacity: isDisabled(row) ? 0.3 : 1,
+                        cursor: isSelectible(row) ? "pointer" : "auto",
+                      }}
                     >
                       {headers.map((header) => {
                         if (header.arrayAttribute) {
@@ -516,11 +468,18 @@ export default function EnhancedTable(props) {
           />
         ) : null}
 
-        <Backdrop className={classes.backdrop} open={loading}>
+        <Backdrop
+          sx={{
+            zIndex: theme.zIndex.modal + 1,
+            color: "#fff",
+            position: "absolute",
+          }}
+          open={loading}
+        >
           <CircularProgress color="inherit" />
         </Backdrop>
       </Paper>
-    </div>
+    </Box>
   );
 }
 
