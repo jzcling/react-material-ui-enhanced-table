@@ -36,7 +36,6 @@ const classes = {
   highlight: `${PREFIX}-highlight`,
   title: `${PREFIX}-title`,
   grow: `${PREFIX}-grow`,
-  pr0: `${PREFIX}-pr0`,
   ml1: `${PREFIX}-ml1`,
   createButton: `${PREFIX}-createButton`,
   editButton: `${PREFIX}-editButton`,
@@ -69,10 +68,6 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 
   [`& .${classes.grow}`]: {
     flexGrow: 1,
-  },
-
-  [`& .${classes.pr0}`]: {
-    paddingRight: 0,
   },
 
   [`& .${classes.ml1}`]: {
@@ -152,12 +147,7 @@ export default function EnhancedTableToolbar(props) {
               label="From"
               value={dates.from || null}
               onChange={(value) => handleDateChange("from", value)}
-              renderInput={(params) => (
-                <TextField fullWidth size="small" {...params} />
-              )}
-              InputProps={{
-                className: classes.pr0,
-              }}
+              renderInput={(params) => <TextField size="small" {...params} />}
             />
           </LocalizationProvider>
           <LocalizationProvider dateAdapter={DateAdapter}>
@@ -168,12 +158,7 @@ export default function EnhancedTableToolbar(props) {
               label="To"
               value={dates.to || null}
               onChange={(value) => handleDateChange("to", value)}
-              renderInput={(params) => (
-                <TextField fullWidth size="small" {...params} />
-              )}
-              InputProps={{
-                className: classes.pr0,
-              }}
+              renderInput={(params) => <TextField size="small" {...params} />}
             />
           </LocalizationProvider>
           <div className={classes.grow} />
