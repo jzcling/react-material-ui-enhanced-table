@@ -94,17 +94,18 @@ export default function EnhancedTableToolbar(props) {
               renderInput={(params) => <TextField size="small" {...params} />}
             />
           </LocalizationProvider>
-          <LocalizationProvider dateAdapter={DateAdapter}>
-            <DatePicker
-              sx={{ ml: 1 }}
-              inputFormat="dd/MM/yyyy"
-              id="date-to"
-              label="To"
-              value={dates.to || null}
-              onChange={(value) => handleDateChange("to", value)}
-              renderInput={(params) => <TextField size="small" {...params} />}
-            />
-          </LocalizationProvider>
+          <Box sx={{ ml: 1 }}>
+            <LocalizationProvider dateAdapter={DateAdapter}>
+              <DatePicker
+                inputFormat="dd/MM/yyyy"
+                id="date-to"
+                label="To"
+                value={dates.to || null}
+                onChange={(value) => handleDateChange("to", value)}
+                renderInput={(params) => <TextField size="small" {...params} />}
+              />
+            </LocalizationProvider>
+          </Box>
           <Box sx={{ flexGrow: 1 }} />
         </Fragment>
       ) : (
@@ -207,7 +208,7 @@ export default function EnhancedTableToolbar(props) {
               <InputLabel htmlFor="universal-filter">Filter</InputLabel>
               <OutlinedInput
                 id="universal-filter"
-                margin="dense"
+                size="small"
                 onChange={handleDebouncedFilterChange}
                 disabled={loading}
                 startAdornment={
