@@ -1,42 +1,27 @@
+import get from "lodash/get";
 import React, { Fragment, useMemo } from "react";
-import PropTypes from "prop-types";
-import { lighten } from "@mui/material/styles";
+
 import {
-  Badge,
-  Box,
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  TextField,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { debounce } from "@mui/material/utils";
+  AddCircle, Cached, CloudUpload, Delete, Edit, FilterList, GetApp
+} from "@mui/icons-material";
 import { DatePicker, LocalizationProvider } from "@mui/lab";
 import DateAdapter from "@mui/lab/AdapterDateFns";
 import {
-  AddCircle,
-  Cached,
-  CloudUpload,
-  Delete,
-  Edit,
-  FilterList,
-  GetApp,
-} from "@mui/icons-material";
+  Badge, Box, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField,
+  Toolbar, ToolbarProps, Tooltip, Typography
+} from "@mui/material";
 import { amber, indigo } from "@mui/material/colors";
-import get from "lodash/get";
+import { lighten } from "@mui/material/styles";
+import { debounce } from "@mui/material/utils";
 
-const rootStyle = (disableSelection, selected) => {
-  var style = {
+function getRootSx<TData>(disableSelection: boolean, selected: TData) {
+  let sx: ToolbarProps["sx"] = {
     pl: 2,
     pr: 1,
   };
   if (!disableSelection && Object.keys(selected).length > 0) {
-    style = {
-      ...style,
+    sx = {
+      ...sx,
       color: (theme) =>
         theme.palette.mode === "light" ? "secondary.main" : "text.primary",
       backgroundColor: (theme) =>
@@ -45,10 +30,38 @@ const rootStyle = (disableSelection, selected) => {
           : "secondary.dark",
     };
   }
-  return style;
-};
+  return sx;
+}
 
-export default function EnhancedTableToolbar(props) {
+interface Props<TData> {
+  selected: TData;
+  descriptorAttribute: string;
+  handleActionClick: (
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    action: string
+  ) => void;
+  actionButtons: Array<
+    | "create"
+    | "edit"
+    | "delete"
+    | "filter"
+    | "download"
+    | "refresh"
+    | "import"
+    | "bulkEdit"
+    | "dateFilters"
+  >;
+  handleUniversalFilterChange: (
+    event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => void;
+  handleDateChange: (dateField: "from" | "to", value: string | null) => void;
+  dates: { from: string; to: string };
+  loading: boolean;
+  refreshBadgeCount: number;
+  disableSelection: boolean;
+}
+
+export default function EnhancedTableToolbar<TData>(props: Props<TData>) {
   const {
     selected,
     descriptorAttribute,
@@ -62,17 +75,18 @@ export default function EnhancedTableToolbar(props) {
     disableSelection,
   } = props;
 
-  const debouncedHandler = useMemo(
-    () => debounce((event) => handleUniversalFilterChange(event), 700),
+  const handleDebouncedFilterChange = useMemo(
+    () =>
+      debounce(
+        (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) =>
+          handleUniversalFilterChange(event),
+        700
+      ),
     []
   );
 
-  const handleDebouncedFilterChange = (event) => {
-    debouncedHandler(event);
-  };
-
   return (
-    <Toolbar sx={rootStyle(disableSelection, selected)}>
+    <Toolbar sx={getRootSx(disableSelection, selected)}>
       {!disableSelection && Object.keys(selected).length > 0 ? (
         <Typography
           sx={{ flex: "1 1 100%" }}
@@ -87,7 +101,6 @@ export default function EnhancedTableToolbar(props) {
           <LocalizationProvider dateAdapter={DateAdapter}>
             <DatePicker
               inputFormat="dd/MM/yyyy"
-              id="date-from"
               label="From"
               value={dates.from || null}
               onChange={(value) => handleDateChange("from", value)}
@@ -98,7 +111,6 @@ export default function EnhancedTableToolbar(props) {
             <LocalizationProvider dateAdapter={DateAdapter}>
               <DatePicker
                 inputFormat="dd/MM/yyyy"
-                id="date-to"
                 label="To"
                 value={dates.to || null}
                 onChange={(value) => handleDateChange("to", value)}
@@ -233,17 +245,4 @@ EnhancedTableToolbar.defaultProps = {
   refreshBadgeCount: 0,
   disableSelection: false,
   loading: false,
-};
-
-EnhancedTableToolbar.propTypes = {
-  selected: PropTypes.object,
-  descriptorAttribute: PropTypes.string,
-  handleActionClick: PropTypes.func.isRequired,
-  actionButtons: PropTypes.array,
-  handleUniversalFilterChange: PropTypes.func.isRequired,
-  handleDateChange: PropTypes.func.isRequired,
-  dates: PropTypes.object.isRequired,
-  loading: PropTypes.bool,
-  refreshBadgeCount: PropTypes.number,
-  disableSelection: PropTypes.bool,
 };

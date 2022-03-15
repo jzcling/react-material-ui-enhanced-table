@@ -1,37 +1,202 @@
-import React, { Fragment } from "react";
-import PropTypes from "prop-types";
-import {
-  Backdrop,
-  Box,
-  Checkbox,
-  Chip,
-  CircularProgress,
-  Collapse,
-  IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Tooltip,
-} from "@mui/material";
-import { lighten, useTheme } from "@mui/material/styles";
-import EnhancedTableToolbar from "./EnhancedTableToolbar";
-import EnhancedTableHead from "./EnhancedTableHead";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { grey, indigo } from "@mui/material/colors";
-import get from "lodash/get";
-import EnhancedSubTable from "./EnhancedSubTable";
 import { format, parseISO } from "date-fns";
+import get from "lodash/get";
+import React, { Fragment } from "react";
 
-function getKey(header) {
-  return header.key || header.attribute;
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import {
+  Backdrop, Box, Checkbox, Chip, CircularProgress, Collapse, IconButton, Paper, Table, TableBody,
+  TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip
+} from "@mui/material";
+import { grey, indigo } from "@mui/material/colors";
+import { lighten } from "@mui/material/styles";
+
+import { Header } from "../contracts/Header";
+import { getKey } from "../utils";
+import EnhancedSubTable from "./EnhancedSubTable";
+import EnhancedTableHead from "./EnhancedTableHead";
+import EnhancedTableToolbar from "./EnhancedTableToolbar";
+
+export interface EnhancedTableProps<TData extends Record<string, any>> {
+  /**
+   * Table title
+   */
+  title: string;
+  /**
+   * Table row data
+   */
+  rows: Array<TData>;
+  /**
+   * Table headers
+   */
+  headers: Array<Header<TData>>;
+  /**
+   * Whether to use dense prop for Material UI's Table
+   */
+  dense: boolean;
+  /**
+   * Column sort order. One of: `asc`, `desc`
+   */
+  order: "asc" | "desc";
+  /**
+   * Attribute to sort column by
+   */
+  orderBy: string;
+  /**
+   * Whether to display loading Backdrop component
+   */
+  loading: boolean;
+  /**
+   * Current page
+   */
+  page: number;
+  /**
+   * Total result count
+   */
+  totalCount: number;
+  /**
+   * Number of rows per page
+   */
+  rowsPerPage: number;
+  /**
+   * Selected row(s)
+   */
+  selected: Array<TData>;
+  /**
+   * Attributed used to display descriptor for selected row in toolbar
+   */
+  descriptorAttribute: string;
+  /**
+   * Method to handle row click event
+   */
+  handleRowClick: (
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    row: TData
+  ) => void;
+  /**
+   * Method to handle column sort click
+   */
+  handleRequestSort: () => void;
+  /**
+   * Method to handle page change
+   */
+  handlePageChange: () => void;
+  /**
+   * Method to handle rows per page change
+   */
+  handleRowsPerPageChange: () => void;
+  /**
+   * Method to handle universal filter onChange event
+   */
+  handleUniversalFilterChange: () => void;
+  /**
+   * Method to handle date changes in date filters
+   */
+  handleDateChange: () => void;
+  /**
+   * Method to handle table action click
+   */
+  handleActionClick: (
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    action: string
+  ) => void;
+  /**
+   * Method to handle action click within a nested table in a row
+   */
+  handleNestedAction: () => void;
+  /**
+   * Method to handle nested field onChange event
+   */
+  handleNestedFieldChange: () => void;
+  /**
+   * Object indicating the actions available for each nested row.
+   * Possible actions include add or edit. Object needs to be of the form
+   * `{ [nestedRowId]: { add: true, edit: true } }`
+   */
+  nestedRowAction: {
+    [nestedRowIdentifier: string]: { [action: string]: boolean };
+  };
+  /**
+   * Filter dates. Must be of the form
+   * ```
+   * {
+   *   from: format(new Date(), "yyyy-MM-dd"),
+   *   to: format(new Date(), "yyyy-MM-dd")
+   * }
+   * ```
+   */
+  dates: { from: string; to: string };
+  /**
+   * Actions to include in table. E.g. `["create", "edit", "delete", "filter"]`
+   */
+  actionButtons: Array<
+    | "create"
+    | "edit"
+    | "delete"
+    | "filter"
+    | "download"
+    | "refresh"
+    | "import"
+    | "bulkEdit"
+    | "dateFilters"
+  >;
+  /**
+   * Whether to show the toolbar
+   */
+  showToolbar: boolean;
+  /**
+   * Whether each row should be collapsible
+   */
+  collapsible: boolean;
+  /**
+   * Array of content for each collapsible row. Index of this array should
+   * correspond to index of rows. The collapse content for rows[0] should be
+   * collapseContent[0]. Default collapse content is a table.
+   */
+  collapseContent: Array<JSX.Element>;
+  /**
+   * Headers for default table within collapse content.
+   * Required if collapsible = true and collapseContent prop is not passed
+   */
+  collapseHeaders: Array<Header<TData>>;
+  /**
+   * Object to indicate which collapsible rows should be open.
+   * Object should be of the form `{ [row[identifier]]: true }`
+   */
+  openRows: { [rowIdentifier: string]: boolean };
+  /**
+   * Attribute used as row identifier
+   */
+  identifier: keyof TData;
+  /**
+   * Method to handle collapse icon click event
+   */
+  handleCollapseIconClick: (
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    rowIdentifier: string,
+    isCollapsed: boolean
+  ) => void;
+  /**
+   * Whether to ignore click event on row
+   */
+  disableRowClick: boolean;
+  /**
+   * Makes rows unselectable
+   */
+  disableSelection: boolean;
+  /**
+   * Manually define the selectible rows. Array should contain the row identifiers
+   */
+  selectibleRows: Array<string | number>;
+  /**
+   * Badge count for refresh button. This can be used to indicate whether
+   * the table has pending unfetched data
+   */
+  refreshBadgeCount: number;
 }
 
-export default function EnhancedTable(props) {
+export default function EnhancedTable<TData extends Record<string, any>>(
+  props: EnhancedTableProps<TData>
+) {
   const {
     title,
     rows,
@@ -70,20 +235,18 @@ export default function EnhancedTable(props) {
     identifier,
   } = props;
 
-  const theme = useTheme();
-
-  function isSelected(row) {
+  function isSelected(row: TData) {
     if (disableSelection) {
       return false;
     }
     return selected.map((item) => item[identifier]).includes(row[identifier]);
   }
 
-  function isDisabled(row) {
+  function isDisabled(row: TData) {
     return selectibleRows !== null && !selectibleRows.includes(row[identifier]);
   }
 
-  function isSelectible(row) {
+  function isSelectible(row: TData) {
     return (
       selectibleRows === null ||
       (selectibleRows !== null && selectibleRows.includes(row[identifier]))
@@ -92,7 +255,11 @@ export default function EnhancedTable(props) {
 
   // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
-  const formatContent = (header, content, additionalContent = null) => {
+  function formatContent(
+    header: Header<TData>,
+    content: string,
+    additionalPriceContent?: string
+  ) {
     if (!content) {
       return "";
     }
@@ -115,10 +282,9 @@ export default function EnhancedTable(props) {
       return content.slice(0, header.truncate);
     }
     if (header.chip) {
-      const [bgColor, borderColor] = header.color[content] || [
-        indigo[50],
-        indigo[200],
-      ];
+      const [bgColor, borderColor] = header.chipColor
+        ? header.chipColor[content]
+        : [indigo[50], indigo[200]];
       return (
         <Chip
           style={{
@@ -131,33 +297,28 @@ export default function EnhancedTable(props) {
       );
     }
     if (header.price) {
-      if (additionalContent) {
-        return additionalContent + " " + content;
+      if (additionalPriceContent) {
+        return `${additionalPriceContent} ${content}`;
       }
-      return "$ " + content;
+      return `${header.priceCurrency || "$"} ${content}`;
     }
     return content;
-  };
+  }
 
-  const getCellDom = (header, data) => {
-    var key = getKey(header);
-    var content;
+  function getCellComponent(header: Header<TData>, data: TData) {
+    let key = getKey(header);
+    let content;
+
+    const cellDimensions = {
+      width: header.width || "auto",
+      minWidth: header.minWidth || "auto",
+      maxWidth: header.maxWidth || "none",
+    };
 
     if (header.collapse) {
       return (
-        <TableCell
-          key={key}
-          style={{
-            width: header.width || null,
-            minWidth: header.minWidth || null,
-            maxWidth: header.maxWidth || null,
-          }}
-        >
-          <Tooltip
-            title={
-              openRows[data[identifier] || undefined] ? "Shrink" : "Expand"
-            }
-          >
+        <TableCell key={key} sx={cellDimensions} rowSpan={getRowSpan(data)}>
+          <Tooltip title={openRows[data[identifier]] ? "Shrink" : "Expand"}>
             <IconButton
               aria-label="expand row"
               size="small"
@@ -165,11 +326,11 @@ export default function EnhancedTable(props) {
                 handleCollapseIconClick(
                   event,
                   data[identifier],
-                  !openRows[data[identifier] || undefined]
+                  !openRows[data[identifier]]
                 )
               }
             >
-              {openRows[data[identifier] || undefined] ? (
+              {openRows[data[identifier]] ? (
                 <KeyboardArrowUp />
               ) : (
                 <KeyboardArrowDown />
@@ -181,20 +342,13 @@ export default function EnhancedTable(props) {
     } else if (header.checkbox) {
       const isItemSelected = isSelected(data);
       return (
-        <TableCell key={key} padding="checkbox">
+        <TableCell key={key} padding="checkbox" rowSpan={getRowSpan(data)}>
           <Checkbox checked={isItemSelected} disabled={!isSelectible(data)} />
         </TableCell>
       );
     } else if (header.actions) {
       return (
-        <TableCell
-          key={key}
-          style={{
-            width: header.width || null,
-            minWidth: header.minWidth || null,
-            maxWidth: header.maxWidth || null,
-          }}
-        >
+        <TableCell key={key} sx={cellDimensions} rowSpan={getRowSpan(data)}>
           {header.actions.map((action) =>
             action.hideCondition && action.hideCondition(data) ? null : (
               <Tooltip key={action.id} title={action.tooltip}>
@@ -202,8 +356,8 @@ export default function EnhancedTable(props) {
                   <IconButton
                     aria-label={action.id}
                     onClick={(event) => action.onClick(event, data)}
-                    style={{
-                      color:
+                    sx={{
+                      color: (theme) =>
                         action.disableCondition && action.disableCondition(data)
                           ? grey[400]
                           : action.color || theme.palette.primary.main,
@@ -228,14 +382,11 @@ export default function EnhancedTable(props) {
         <TableCell
           key={key}
           align={header.numeric ? "right" : "left"}
-          style={{
-            width: header.width || null,
-            minWidth: header.minWidth || null,
-            maxWidth: header.maxWidth || null,
-          }}
+          sx={cellDimensions}
           onClick={(event) =>
             header.stopPropagation ? event.stopPropagation() : {}
           }
+          rowSpan={getRowSpan(data)}
         >
           {header.component(data)}
         </TableCell>
@@ -249,12 +400,11 @@ export default function EnhancedTable(props) {
         <TableCell
           key={key}
           align={header.numeric ? "right" : "left"}
-          dangerouslySetInnerHTML={{ __html: formatContent(header, content) }}
-          style={{
-            width: header.width || null,
-            minWidth: header.minWidth || null,
-            maxWidth: header.maxWidth || null,
+          dangerouslySetInnerHTML={{
+            __html: formatContent(header, content) as string,
           }}
+          sx={cellDimensions}
+          rowSpan={getRowSpan(data)}
         />
       );
     }
@@ -263,34 +413,31 @@ export default function EnhancedTable(props) {
       <TableCell
         key={key}
         align={header.numeric ? "right" : "left"}
-        style={{
-          width: header.width || null,
-          minWidth: header.minWidth || null,
-          maxWidth: header.maxWidth || null,
-        }}
+        sx={cellDimensions}
+        rowSpan={getRowSpan(data)}
       >
         {formatContent(header, content)}
       </TableCell>
     );
-  };
+  }
 
-  function getFieldContent(header, data) {
-    var key = getKey(header);
-    var content;
+  function getFieldContent(header: Header<TData>, data: TData) {
+    let key = getKey(header);
+    let content: string;
 
     if (header.multiField) {
       if (header.html) {
         content = header.html;
-        header.data.forEach((item, index) => {
+        header.multiFieldData?.forEach((item, index) => {
           const value = get(data, item.attribute) || "";
-          content = content.replace(`{{${index}}}`, formatContent(item, value));
+          content = content.replace(`{{${index}}}`, value);
         });
       } else {
         content = "";
-        header.data.forEach((item, index) => {
+        header.multiFieldData?.forEach((item, index) => {
           const value = get(data, item.attribute) || "";
-          content += formatContent(item, value);
-          if (index !== header.data.length - 1) {
+          content += value;
+          if (index !== (header.multiFieldData?.length ?? 0) - 1) {
             content += ", ";
           }
         });
@@ -308,16 +455,31 @@ export default function EnhancedTable(props) {
     return [key, get(data, header.attribute)];
   }
 
-  const getRowSpan = (row) => {
+  const getRowSpan = (row: TData) => {
     return headers
       .map((header) => {
-        if (header.arrayAttribute) {
-          return (get(row, header.childAttribute) || []).length;
+        if (header.arrayAttribute && header.childAttribute) {
+          return (get(row, header.childAttribute) as Array<any>).length || 1;
         }
         return 1;
       })
       .reduce((max, curr) => Math.max(max, curr), 0);
   };
+
+  const handleTableRowClick =
+    (row: TData) => (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      if (disableRowClick) return;
+      if (collapsible) {
+        handleCollapseIconClick(
+          event,
+          row[identifier],
+          !openRows[row[identifier]]
+        );
+      }
+      if (handleRowClick) {
+        handleRowClick(event, row);
+      }
+    };
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -353,29 +515,16 @@ export default function EnhancedTable(props) {
             />
             <TableBody>
               {rows.map((row, index) => {
-                var isItemSelected = isSelected(row);
+                let isItemSelected = isSelected(row);
                 return (
                   <Fragment key={row[identifier] || index}>
                     <TableRow
                       hover={isSelectible(row)}
-                      onClick={(event) => {
-                        if (disableRowClick) return;
-                        if (collapsible) {
-                          handleCollapseIconClick(
-                            event,
-                            row[identifier],
-                            !openRows[row[identifier] || undefined]
-                          );
-                        }
-                        if (handleRowClick) {
-                          handleRowClick(event, row);
-                        }
-                      }}
+                      onClick={handleTableRowClick(row)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       selected={isItemSelected}
-                      rowSpan={getRowSpan(row)}
                       sx={{
                         opacity: isDisabled(row) ? 0.3 : 1,
                         cursor: isSelectible(row) ? "pointer" : "auto",
@@ -388,23 +537,23 @@ export default function EnhancedTable(props) {
                               key={getKey(header)}
                               header={header}
                               row={row}
+                              identifier={identifier}
                               handleNestedAction={handleNestedAction}
                               handleNestedFieldChange={handleNestedFieldChange}
                               nestedRowAction={nestedRowAction}
                               formatContent={formatContent}
+                              rowSpan={getRowSpan(row)}
                             />
                           );
                         }
-                        return getCellDom(header, row);
+                        return getCellComponent(header, row);
                       })}
                     </TableRow>
                     {collapsible && (
                       <TableRow
-                        style={{
-                          backgroundColor: lighten(
-                            theme.palette.primary.light,
-                            0.9
-                          ),
+                        sx={{
+                          backgroundColor: (theme) =>
+                            lighten(theme.palette.primary.light, 0.9),
                         }}
                       >
                         <TableCell
@@ -412,7 +561,7 @@ export default function EnhancedTable(props) {
                           colSpan={headers.length}
                         >
                           <Collapse
-                            in={openRows[row[identifier] || undefined]}
+                            in={openRows[row[identifier]]}
                             timeout="auto"
                             mountOnEnter
                             unmountOnExit
@@ -434,7 +583,7 @@ export default function EnhancedTable(props) {
                                   <TableBody>
                                     <TableRow>
                                       {collapseHeaders.map((head) =>
-                                        getCellDom(head, row)
+                                        getCellComponent(head, row)
                                       )}
                                     </TableRow>
                                   </TableBody>
@@ -470,7 +619,7 @@ export default function EnhancedTable(props) {
 
         <Backdrop
           sx={{
-            zIndex: theme.zIndex.modal + 1,
+            zIndex: (theme) => theme.zIndex.modal + 1,
             color: "#fff",
             position: "absolute",
           }}
@@ -515,42 +664,4 @@ EnhancedTable.defaultProps = {
   handleCollapseIconClick: () => {},
   selectibleRows: null,
   identifier: "id",
-};
-
-EnhancedTable.propTypes = {
-  title: PropTypes.string,
-  rows: PropTypes.array.isRequired,
-  totalCount: PropTypes.number,
-  descriptorAttribute: PropTypes.string,
-  headers: PropTypes.array.isRequired,
-  dense: PropTypes.bool,
-  order: PropTypes.oneOf(["", "asc", "desc"]),
-  orderBy: PropTypes.string,
-  loading: PropTypes.bool,
-  page: PropTypes.number,
-  rowsPerPage: PropTypes.number,
-  selected: PropTypes.array,
-  handleRowClick: PropTypes.func,
-  handleRequestSort: PropTypes.func,
-  handlePageChange: PropTypes.func,
-  handleRowsPerPageChange: PropTypes.func,
-  handleNestedAction: PropTypes.func,
-  handleNestedFieldChange: PropTypes.func,
-  handleActionClick: PropTypes.func,
-  disableRowClick: PropTypes.bool,
-  handleUniversalFilterChange: PropTypes.func,
-  handleDateChange: PropTypes.func,
-  dates: PropTypes.object,
-  actionButtons: PropTypes.array,
-  showToolbar: PropTypes.bool,
-  collapsible: PropTypes.bool,
-  collapseHeaders: PropTypes.array,
-  collapseContent: PropTypes.array,
-  refreshBadgeCount: PropTypes.number,
-  disableSelection: PropTypes.bool,
-  nestedRowAction: PropTypes.object,
-  openRows: PropTypes.object,
-  handleCollapseIconClick: PropTypes.func,
-  selectibleRows: PropTypes.array,
-  identifier: PropTypes.string,
 };

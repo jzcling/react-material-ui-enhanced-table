@@ -1,30 +1,32 @@
 import React from "react";
-import PropTypes from "prop-types";
-import {
-  Box,
-  Grid,
-  IconButton,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  Tooltip,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 
-export default function EnhancedTableHead(props) {
+import {
+  Box, Grid, IconButton, TableCell, TableHead, TableRow, TableSortLabel, Tooltip
+} from "@mui/material";
+
+import { Header } from "../contracts/Header";
+import { getKey } from "../utils";
+
+interface Props<TData> {
+  headers: Array<Header<TData>>;
+  onRequestSort: (
+    event: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+    property: string
+  ) => void;
+  order?: "asc" | "desc";
+  orderBy: string;
+}
+
+export default function EnhancedTableHead<TData>(props: Props<TData>) {
   const { headers, order, orderBy, onRequestSort } = props;
 
-  const theme = useTheme();
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
+  const createSortHandler =
+    (property: string) =>
+    (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+      onRequestSort(event, property);
+    };
 
-  function getKey(header) {
-    return header.key || header.attribute;
-  }
-
-  function getLabel(header) {
+  function getLabel(header: Header<TData>) {
     return (
       <Grid container alignItems="center">
         {header.label}
@@ -34,9 +36,10 @@ export default function EnhancedTableHead(props) {
               <Tooltip key={action.id} title={action.tooltip}>
                 <IconButton
                   aria-label={action.tooltip}
-                  style={{
-                    color: action.color || theme.palette.primary.main,
-                    marginLeft: theme.spacing(1),
+                  sx={{
+                    color: (theme) =>
+                      action.color || theme.palette.primary.main,
+                    ml: 1,
                   }}
                   onClick={(event) => action.onClick(event)}
                   size="small"
@@ -96,10 +99,3 @@ export default function EnhancedTableHead(props) {
     </TableHead>
   );
 }
-
-EnhancedTableHead.propTypes = {
-  headers: PropTypes.array.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(["", "asc", "desc"]).isRequired,
-  orderBy: PropTypes.string.isRequired,
-};

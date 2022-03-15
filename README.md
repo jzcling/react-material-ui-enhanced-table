@@ -57,7 +57,7 @@ export default function Orders(props) {
       attribute: "status",
       label: "Status",
       chip: true,
-      color: {
+      chipColor: {
         "In Progress": [amber[50], amber[200]],
         Completed: [green[50], green[200]],
       },
@@ -70,7 +70,7 @@ export default function Orders(props) {
     {
       multiField: true,
       key: "customer",
-      data: [
+      multiFieldData: [
         {
           attribute: "user.name",
         },
@@ -134,7 +134,7 @@ export default function Orders(props) {
       {
         multiField: true,
         key: "product",
-        data: [
+        multiFieldData: [
           {
             attribute: "product.name",
           },
@@ -154,7 +154,7 @@ export default function Orders(props) {
         attribute: "status",
         label: "Status",
         chip: true,
-        color: {
+        chipColor: {
           Pending: [amber[50], amber[200]],
           Paid: [lightGreen[50], lightGreen[200]],
           Processed: [indigo[50], indigo[200]],
@@ -219,7 +219,7 @@ export default function Orders(props) {
   function updateOpenRows(event, key, value) {
     event.stopPropagation();
 
-    var updated = JSON.parse(JSON.stringify(openRows));
+    let updated = JSON.parse(JSON.stringify(openRows));
     updated[key] = value;
     setOpenRows(updated);
   }
@@ -330,7 +330,7 @@ export default function Products(props) {
     {
       multiField: true,
       key: "product",
-      data: [
+      multiFieldData: [
         {
           attribute: "name",
         },
@@ -350,7 +350,7 @@ export default function Products(props) {
       attribute: "status",
       label: "Status",
       chip: true,
-      color: {
+      chipColor: {
         Inactive: [red[50], red[200]],
         Active: [green[50], green[200]],
       },
@@ -456,7 +456,8 @@ export default function Products(props) {
 
 | Prop                        | Type     | Default                                                                            | Description                                                                                                                                                                                                |
 | --------------------------- | -------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| rows                        | `array`  | required                                                                           | Table row content                                                                                                                                                                                          |
+| title                       | `string` | `undefined`                                                                        | Table title                                                                                                                                                                                                |
+| rows                        | `array`  | required                                                                           | Table row data                                                                                                                                                                                             |
 | headers                     | `array`  | required                                                                           | Table headers. Customise with props (see below)                                                                                                                                                            |
 | dense                       | `bool`   | `true`                                                                             | Whether to use dense prop for Material UI's Table                                                                                                                                                          |
 | order                       | `string` | `asc`                                                                              | Column sort order. One of :<br/>`asc`,<br/>`desc`                                                                                                                                                          |
@@ -476,20 +477,20 @@ export default function Products(props) {
 | handleActionClick           | `func`   | `() => {}`                                                                         | Method to handle table action click                                                                                                                                                                        |
 | handleNestedAction          | `func`   | `() => {}`                                                                         | Method to handle action click within a nested table in a row                                                                                                                                               |
 | handleNestedFieldChange     | `func`   | `() => {}`                                                                         | Method to handle nested field onChange event                                                                                                                                                               |
-| nestedRowAction             | `object` | `{}`                                                                               | Object indicating the actions available for each nested row. Possible actions include `add` or `edit`. Object needs to be of the form `{ [nestedRowId]: { add: true, edit: true } }`                       |
+| nestedRowAction             | `object` | `{}`                                                                               | Object indicating the actions available for each nested row. Possible actions include `add` or `edit`. Object needs to be of the form `{ [nestedRowIdentifier]: { add: true, edit: true } }`               |
 | dates                       | `object` | `{ from: format(new Date(), "yyyy-MM-dd"), to: format(new Date(), "yyyy-MM-dd") }` | Filter dates                                                                                                                                                                                               |
 | actionButtons               | `array`  | `["create", "edit", "delete", "filter"]`                                           | Actions to include in table                                                                                                                                                                                |
-| showToolbar                 | `bool`   | `true`                                                                             | Where to show the toolbar                                                                                                                                                                                  |
+| showToolbar                 | `bool`   | `true`                                                                             | Whether to show the toolbar                                                                                                                                                                                |
 | collapsible                 | `bool`   | `false`                                                                            | Whether each row should be collapsible                                                                                                                                                                     |
 | collapseContent             | `array`  | `null`                                                                             | Array of content for each collapsible row. Index of this array should correspond to index of rows. The collapse content for `rows[0]` should be `collapseContent[0]`. Default collapse content is a table. |
 | collapseHeaders             | `array`  | `[]`                                                                               | Headers for default table within collapse content. Required if `collapsible = true` and `collapseContent` prop is not passed                                                                               |
 | openRows                    | `object` | `{}`                                                                               | Object to indicate which collapsible rows should be open. Object should be of the form `{ [row[identifier]]: true }`                                                                                       |
+| identifier                  | `string` | `id`                                                                               | Attribute used as row identifier                                                                                                                                                                           |
 | handleCollapseIconClick     | `func`   | `() => {}`                                                                         | Method to handle collapse icon click event                                                                                                                                                                 |
 | disableRowClick             | `bool`   | `false`                                                                            | Whether to ignore click event on row                                                                                                                                                                       |
 | disableSelection            | `bool`   | `false`                                                                            | Makes rows unselectable                                                                                                                                                                                    |
-| refreshBadgeCount           | `number` | `0`                                                                                | Badge count for refresh button. This can be used to indicate whether the table has pending unfetched data                                                                                                  |
 | selectibleRows              | `array`  | `null`                                                                             | Manually define the selectible rows. Array should contain the row identifiers                                                                                                                              |
-| identifier                  | `string` | `id`                                                                               | Attribute used as row identifier                                                                                                                                                                           |
+| refreshBadgeCount           | `number` | `0`                                                                                | Badge count for refresh button. This can be used to indicate whether the table has pending unfetched data                                                                                                  |
 
 ## Header Props
 
@@ -499,10 +500,10 @@ export default function Products(props) {
 | attribute                | `string` | `undefined` | Attribute used to determine cell content                                                                                                                                                                                   |
 | label                    | `string` | `undefined` | Header label                                                                                                                                                                                                               |
 | multiField               | `bool`   | `undefined` | Whether the cell should display content from multiple attributes. Best used with `data` and `html` props.                                                                                                                  |
-| data                     | `array`  | `undefined` | Array of attributes used for multiField content. Required if `multiField = true`. Array should be of the form `[{ attribute: "name" }]`                                                                                    |
+| multiFieldData           | `array`  | `undefined` | Array of attributes used for multiField content. Required if `multiField = true`. Array should be of the form `[{ attribute: "name" }]`                                                                                    |
 | html                     | `string` | `undefined` | HTML code for displaying content. Attribute will be substituted in for `{{0}}`. If used with `multiField`, `data` attributes will be substituted in for `{{index}}`, where index is the position index of the `data` array |
 | chip                     | `bool`   | `undefined` | If true, column will contain a Material UI Chip populated with `attribute`. The `color` prop can be used to determine the Chip's color                                                                                     |
-| color                    | `object` | `undefined` | Used with `chip`. Object of the form `{ [option]: [bgColor, borderColor] }`                                                                                                                                                |
+| chipColor                | `object` | `undefined` | Used with `chip`. Object of the form `{ [option]: [bgColor, borderColor] }`                                                                                                                                                |
 | collapse                 | `bool`   | `undefined` | If true, column will contain a collapse icon                                                                                                                                                                               |
 | checkbox                 | `bool`   | `undefined` | If true, column will contain a Material UI Checkbox component that is controlled by whether the row is selected                                                                                                            |
 | actions                  | `array`  | `undefined` | Array containing possible actions for each row. Should be of the form `{ id: "cancel", icon: <Block />, tooltip: "Cancel", onClick: (event, row) => {}, color: indigo[400], hideCondition: (data) => {} }`                 |
@@ -513,14 +514,15 @@ export default function Products(props) {
 | childAttribute           | `string` | `undefined` | Attribute within `arrayAttribute` object to display as nested row                                                                                                                                                          |
 | childAttribute2          | `string` | `undefined` | Attribute within `arrayAttribute` object to display on left of `childAttribute` within nested row                                                                                                                          |
 | childLabelAttribute      | `string` | `undefined` | Attribute within `arrayAttribute` object to display on left of childAttribute and childAttribute2 within nested row                                                                                                        |
-| childAttributeLabel      | `string` | `undefined` | Label for `childAttribute` and `childAttribute2`                                                                                                                                                                           |
+| childAttributeLabel      | `string` | `undefined` | Label for `childAttribute`                                                                                                                                                                                                 |
+| childAttribute2Label     | `string` | `undefined` | Label for `childAttribute2`                                                                                                                                                                                                |
 | childLabelAttributeLabel | `string` | `undefined` | Label for `childLabelAttribute`                                                                                                                                                                                            |
 | childActions             | `object` | `undefined` | Object indicating which actions to show for each nested row. Actions available are `add`, `edit` and `delete`. Should be of the form `{ delete: true, edit: true, add: true }`.                                            |
 | orderBy^                 | `array`  | `undefined` | Attribute to order nested table content. Should be of the form `[attribute, asc\|desc]`                                                                                                                                    |
 | numeric                  | `bool`   | `undefined` | If true, content will be right-aligned                                                                                                                                                                                     |
 | price                    | `bool`   | `undefined` | If true, content will be prefixed with `$`                                                                                                                                                                                 |
-| date                     | `bool`   | `undefined` | If true, content will be parsed with date-fns in the format `D MMM yyyy`                                                                                                                                                   |
-| datetime                 | `bool`   | `undefined` | If true, content will be parsed with date-fns in the format `D MMM yyyy` and `h:mm:ss a`                                                                                                                                   |
+| date                     | `bool`   | `undefined` | If true, content will be parsed with date-fns in the format `d MMM yyyy`                                                                                                                                                   |
+| datetime                 | `bool`   | `undefined` | If true, content will be parsed with date-fns in the format `d MMM yyyy` and `h:mm:ss a`                                                                                                                                   |
 | time                     | `bool`   | `undefined` | If true, content will be parsed with date-fns in the format `h:mm:ss a`                                                                                                                                                    |
 | truncate                 | `number` | `undefined` | Max length of string content                                                                                                                                                                                               |
 | width                    | `number` | `undefined` | Fixed width for column                                                                                                                                                                                                     |
