@@ -6,6 +6,9 @@
 # testing
 /coverage
 
+# tsc build folder
+/build
+
 # development
 /src
 
@@ -23,3 +26,4 @@ yarn-error.log*
 .size-snapshot.json
 .eslintrc.js
 rollup.config.js
+tsconfig.json

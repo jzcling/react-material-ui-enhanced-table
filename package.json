@@ -1,6 +1,6 @@
 {
   "name": "@jeremyling/react-material-ui-enhanced-table",
-  "version": "0.5.0",
+  "version": "0.5.3",
   "scripts": {
     "prebuild": "rm -rf build && tsc",
     "build": "rm -rf dist && NODE_ENV=production rollup -c"
