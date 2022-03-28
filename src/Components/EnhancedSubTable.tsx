@@ -225,8 +225,8 @@ export default function EnhancedSubTable<TData extends Record<string, any>>(
                         variant="outlined"
                         sx={{
                           marginRight: "2px",
+                          minWidth: "80px",
                         }}
-                        sx={{ minWidth: "80px" }}
                       >
                         <TextField
                           fullWidth
