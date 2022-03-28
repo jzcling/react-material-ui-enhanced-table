@@ -8,6 +8,7 @@
   "description": "An extended React Material UI Table that aims to make creating complex tables more straightforward.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
+  "types": "dist/dts/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jzcling/react-material-ui-enhanced-table.git"
