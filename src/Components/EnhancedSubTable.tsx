@@ -170,12 +170,12 @@ export default function EnhancedSubTable<TData extends Record<string, any>>(
 
           <TableRow>
             {header.childLabelAttributeLabel && !editing && (
-              <TableCell style={{ padding: 0 }}>
+              <TableCell sx={{ padding: 0 }}>
                 {header.childLabelAttributeLabel}
               </TableCell>
             )}
             {header.childAttributeLabel && !editing && (
-              <TableCell style={{ padding: 0 }}>
+              <TableCell sx={{ padding: 0 }}>
                 {header.childAttributeLabel}
               </TableCell>
             )}
@@ -223,7 +223,7 @@ export default function EnhancedSubTable<TData extends Record<string, any>>(
                     {header.childAttribute2 ? (
                       <FormControl
                         variant="outlined"
-                        style={{
+                        sx={{
                           marginRight: "2px",
                         }}
                         sx={{ minWidth: "80px" }}

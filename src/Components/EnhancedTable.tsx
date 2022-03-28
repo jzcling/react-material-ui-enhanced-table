@@ -287,7 +287,7 @@ export default function EnhancedTable<TData extends Record<string, any>>(
         : [indigo[50], indigo[200]];
       return (
         <Chip
-          style={{
+          sx={{
             backgroundColor: bgColor,
             border: `2px solid ${borderColor}`,
           }}
@@ -556,10 +556,7 @@ export default function EnhancedTable<TData extends Record<string, any>>(
                             lighten(theme.palette.primary.light, 0.9),
                         }}
                       >
-                        <TableCell
-                          style={{ paddingBottom: 0, paddingTop: 0 }}
-                          colSpan={headers.length}
-                        >
+                        <TableCell sx={{ py: 0 }} colSpan={headers.length}>
                           <Collapse
                             in={openRows[row[identifier]]}
                             timeout="auto"
@@ -598,7 +595,7 @@ export default function EnhancedTable<TData extends Record<string, any>>(
                 );
               })}
               {/* {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                <TableRow sx={{ height: (dense ? 33 : 53) * emptyRows }}>
                   <TableCell colSpan={headers.length} />
                 </TableRow>
               )} */}
