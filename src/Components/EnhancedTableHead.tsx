@@ -21,9 +21,11 @@ export default function EnhancedTableHead<TData>(props: Props<TData>) {
   const { headers, order, orderBy, onRequestSort } = props;
 
   const createSortHandler =
-    (property: string) =>
+    (property?: string) =>
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-      onRequestSort(event, property);
+      if (property) {
+        onRequestSort(event, property);
+      }
     };
 
   function getLabel(header: Header<TData>) {

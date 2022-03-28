@@ -1,6 +1,6 @@
 import { Action } from "./Action";
 
-export interface Header<TData extends Record<string, any>> {
+export interface Header<TData extends Record<string, any> = {}> {
   /**
    * Attribute used to determine row key
    */
@@ -8,7 +8,7 @@ export interface Header<TData extends Record<string, any>> {
   /**
    * Attribute used to determine cell content
    */
-  attribute: string;
+  attribute?: string;
   /**
    * Header label
    */

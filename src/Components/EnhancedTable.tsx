@@ -421,7 +421,10 @@ export default function EnhancedTable<TData extends Record<string, any>>(
     );
   }
 
-  function getFieldContent(header: Header<TData>, data: TData) {
+  function getFieldContent(
+    header: Header<TData>,
+    data: TData
+  ): Array<string | TData[string]> {
     let key = getKey(header);
     let content: string;
 
@@ -448,11 +451,16 @@ export default function EnhancedTable<TData extends Record<string, any>>(
 
     if (header.html) {
       content = header.html;
-      content = content.replace(`{{0}}`, get(data, header.attribute));
+      if (header.attribute) {
+        content = content.replace(`{{0}}`, get(data, header.attribute));
+      }
       return [key, content];
     }
 
-    return [key, get(data, header.attribute)];
+    if (header.attribute) {
+      return [key, get(data, header.attribute)];
+    }
+    return [key, ""];
   }
 
   const getRowSpan = (row: TData) => {
