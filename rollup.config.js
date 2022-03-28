@@ -7,6 +7,7 @@ import analyze from "rollup-plugin-analyzer";
 import pkg from "./package.json";
 import { sizeSnapshot } from "rollup-plugin-size-snapshot";
 import autoExternal from "rollup-plugin-auto-external";
+import dts from "rollup-plugin-dts";
 
 const config = [
   {
@@ -41,6 +42,11 @@ const config = [
       autoExternal(),
     ],
     external: [/lodash/, /@mui\//],
+  },
+  {
+    input: "build/dts/index.d.ts",
+    output: [{ file: "dist/dts/index.d.ts" }],
+    plugins: [dts()],
   },
   {
     input: "build/index.js",
