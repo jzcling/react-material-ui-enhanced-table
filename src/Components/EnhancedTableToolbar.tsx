@@ -1,3 +1,4 @@
+import { format, parse } from "date-fns";
 import get from "lodash/get";
 import React, { Fragment, useMemo } from "react";
 
@@ -56,7 +57,7 @@ interface Props<TData> {
   ) => void;
   handleDateChange: (
     dateField: "from" | "to" | "date",
-    value: Date | null
+    value: string | null
   ) => void;
   date?: string;
   dates?: { from: string; to: string };
@@ -108,8 +109,17 @@ export default function EnhancedTableToolbar<TData>(props: Props<TData>) {
               <DatePicker
                 inputFormat="dd/MM/yyyy"
                 label="From"
-                value={dates.from || null}
-                onChange={(value) => handleDateChange("from", value)}
+                value={
+                  dates.from
+                    ? parse(dates.from, "yyyy-MM-dd", new Date())
+                    : null
+                }
+                onChange={(value) =>
+                  handleDateChange(
+                    "from",
+                    value ? format(value, "yyyy-MM-dd") : null
+                  )
+                }
                 renderInput={(params) => <TextField size="small" {...params} />}
               />
             </LocalizationProvider>
@@ -118,8 +128,15 @@ export default function EnhancedTableToolbar<TData>(props: Props<TData>) {
                 <DatePicker
                   inputFormat="dd/MM/yyyy"
                   label="To"
-                  value={dates.to || null}
-                  onChange={(value) => handleDateChange("to", value)}
+                  value={
+                    dates.to ? parse(dates.to, "yyyy-MM-dd", new Date()) : null
+                  }
+                  onChange={(value) =>
+                    handleDateChange(
+                      "to",
+                      value ? format(value, "yyyy-MM-dd") : null
+                    )
+                  }
                   renderInput={(params) => (
                     <TextField size="small" {...params} />
                   )}
@@ -134,8 +151,13 @@ export default function EnhancedTableToolbar<TData>(props: Props<TData>) {
               <DatePicker
                 inputFormat="dd/MM/yyyy"
                 label="Date"
-                value={date}
-                onChange={(value) => handleDateChange("date", value)}
+                value={date ? parse(date, "yyyy-MM-dd", new Date()) : null}
+                onChange={(value) =>
+                  handleDateChange(
+                    "date",
+                    value ? format(value, "yyyy-MM-dd") : null
+                  )
+                }
                 renderInput={(params) => <TextField size="small" {...params} />}
               />
             </LocalizationProvider>

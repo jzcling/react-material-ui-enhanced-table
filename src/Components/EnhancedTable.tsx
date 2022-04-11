@@ -103,7 +103,7 @@ export interface EnhancedTableProps<TData extends Record<string, any>> {
    */
   handleDateChange?: (
     dateField: "from" | "to" | "date",
-    value: Date | null
+    value: string | null
   ) => void;
   /**
    * Method to handle table action click
