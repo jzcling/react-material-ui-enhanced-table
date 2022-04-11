@@ -34,7 +34,7 @@ export default function EnhancedTableHead<TData>(props: Props<TData>) {
         {header.label}
         {header.headerActions &&
           header.headerActions.map((action) =>
-            action.hideCondition ? null : (
+            action.hideCondition && action.hideCondition(header) ? null : (
               <Tooltip key={action.id} title={action.tooltip}>
                 <IconButton
                   aria-label={action.tooltip}
