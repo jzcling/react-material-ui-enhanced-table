@@ -20,7 +20,7 @@ export interface EnhancedTableProps<TData extends Record<string, any>> {
   /**
    * Table title
    */
-  title: string;
+  title?: string;
   /**
    * Table row data
    */
@@ -32,89 +32,106 @@ export interface EnhancedTableProps<TData extends Record<string, any>> {
   /**
    * Whether to use dense prop for Material UI's Table
    */
-  dense: boolean;
+  dense?: boolean;
   /**
-   * Column sort order. One of: `asc`, `desc`
+   * Column sort order. One of: `asc`, `desc`, `undefined`
    */
-  order: "asc" | "desc";
+  order?: "asc" | "desc" | undefined;
   /**
    * Attribute to sort column by
    */
-  orderBy: string;
+  orderBy?: string;
   /**
    * Whether to display loading Backdrop component
    */
-  loading: boolean;
+  loading?: boolean;
   /**
    * Current page
    */
-  page: number;
+  page?: number;
   /**
    * Total result count
    */
-  totalCount: number;
+  totalCount?: number;
   /**
    * Number of rows per page
    */
-  rowsPerPage: number;
+  rowsPerPage?: number;
   /**
    * Selected row(s)
    */
-  selected: Array<TData>;
+  selected?: Array<TData | undefined>;
   /**
    * Attributed used to display descriptor for selected row in toolbar
    */
-  descriptorAttribute: string;
+  descriptorAttribute?: string;
   /**
    * Method to handle row click event
    */
-  handleRowClick: (
+  handleRowClick?: (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
     row: TData
   ) => void;
   /**
    * Method to handle column sort click
    */
-  handleRequestSort: () => void;
+  handleRequestSort?: (
+    event: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+    property: string
+  ) => void;
   /**
    * Method to handle page change
    */
-  handlePageChange: () => void;
+  handlePageChange?: (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    newPage: number
+  ) => void;
   /**
    * Method to handle rows per page change
    */
-  handleRowsPerPageChange: () => void;
+  handleRowsPerPageChange?: (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
   /**
    * Method to handle universal filter onChange event
    */
-  handleUniversalFilterChange: () => void;
+  handleUniversalFilterChange?: (
+    event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => void;
   /**
    * Method to handle date changes in date filters
    */
-  handleDateChange: () => void;
+  handleDateChange?: (
+    dateField: "from" | "to" | "date",
+    value: Date | null
+  ) => void;
   /**
    * Method to handle table action click
    */
-  handleActionClick: (
+  handleActionClick?: (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
     action: string
   ) => void;
   /**
    * Method to handle action click within a nested table in a row
    */
-  handleNestedAction: () => void;
+  handleNestedAction?: () => void;
   /**
    * Method to handle nested field onChange event
    */
-  handleNestedFieldChange: () => void;
+  handleNestedFieldChange?: () => void;
   /**
    * Object indicating the actions available for each nested row.
    * Possible actions include add or edit. Object needs to be of the form
    * `{ [nestedRowId]: { add: true, edit: true } }`
    */
-  nestedRowAction: {
+  nestedRowAction?: {
     [nestedRowIdentifier: string]: { [action: string]: boolean };
   };
+  /**
+   * Filter date in yyyy-MM-dd
+   */
+  date?: string;
   /**
    * Filter dates. Must be of the form
    * ```
@@ -124,11 +141,11 @@ export interface EnhancedTableProps<TData extends Record<string, any>> {
    * }
    * ```
    */
-  dates: { from: string; to: string };
+  dates?: { from: string; to: string };
   /**
    * Actions to include in table. E.g. `["create", "edit", "delete", "filter"]`
    */
-  actionButtons: Array<
+  actionButtons?: Array<
     | "create"
     | "edit"
     | "delete"
@@ -142,35 +159,35 @@ export interface EnhancedTableProps<TData extends Record<string, any>> {
   /**
    * Whether to show the toolbar
    */
-  showToolbar: boolean;
+  showToolbar?: boolean;
   /**
    * Whether each row should be collapsible
    */
-  collapsible: boolean;
+  collapsible?: boolean;
   /**
    * Array of content for each collapsible row. Index of this array should
    * correspond to index of rows. The collapse content for rows[0] should be
    * collapseContent[0]. Default collapse content is a table.
    */
-  collapseContent: Array<JSX.Element>;
+  collapseContent?: Array<JSX.Element>;
   /**
    * Headers for default table within collapse content.
    * Required if collapsible = true and collapseContent prop is not passed
    */
-  collapseHeaders: Array<Header<TData>>;
+  collapseHeaders?: Array<Header<TData>>;
   /**
    * Object to indicate which collapsible rows should be open.
    * Object should be of the form `{ [row[identifier]]: true }`
    */
-  openRows: { [rowIdentifier: string]: boolean };
+  openRows?: { [rowIdentifier: string]: boolean };
   /**
    * Attribute used as row identifier
    */
-  identifier: keyof TData;
+  identifier?: keyof TData;
   /**
    * Method to handle collapse icon click event
    */
-  handleCollapseIconClick: (
+  handleCollapseIconClick?: (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
     rowIdentifier: string,
     isCollapsed: boolean
@@ -178,20 +195,20 @@ export interface EnhancedTableProps<TData extends Record<string, any>> {
   /**
    * Whether to ignore click event on row
    */
-  disableRowClick: boolean;
+  disableRowClick?: boolean;
   /**
    * Makes rows unselectable
    */
-  disableSelection: boolean;
+  disableSelection?: boolean;
   /**
    * Manually define the selectible rows. Array should contain the row identifiers
    */
-  selectibleRows: Array<string | number>;
+  selectibleRows?: Array<string | number>;
   /**
    * Badge count for refresh button. This can be used to indicate whether
    * the table has pending unfetched data
    */
-  refreshBadgeCount: number;
+  refreshBadgeCount?: number;
 }
 
 export default function EnhancedTable<TData extends Record<string, any>>(
@@ -220,6 +237,7 @@ export default function EnhancedTable<TData extends Record<string, any>>(
     disableRowClick,
     handleUniversalFilterChange,
     handleDateChange,
+    date,
     dates,
     actionButtons,
     showToolbar,
@@ -239,17 +257,21 @@ export default function EnhancedTable<TData extends Record<string, any>>(
     if (disableSelection) {
       return false;
     }
-    return selected.map((item) => item[identifier]).includes(row[identifier]);
+    return selected
+      ?.map((item) => item?.[identifier!])
+      .includes(row[identifier!]);
   }
 
   function isDisabled(row: TData) {
-    return selectibleRows !== null && !selectibleRows.includes(row[identifier]);
+    return (
+      selectibleRows !== null && !selectibleRows?.includes(row[identifier!])
+    );
   }
 
   function isSelectible(row: TData) {
     return (
       selectibleRows === null ||
-      (selectibleRows !== null && selectibleRows.includes(row[identifier]))
+      (selectibleRows !== null && selectibleRows?.includes(row[identifier!]))
     );
   }
 
@@ -317,20 +339,29 @@ export default function EnhancedTable<TData extends Record<string, any>>(
 
     if (header.collapse) {
       return (
-        <TableCell key={key} sx={cellDimensions} rowSpan={getRowSpan(data)}>
-          <Tooltip title={openRows[data[identifier]] ? "Shrink" : "Expand"}>
+        <TableCell
+          key={key}
+          sx={{
+            ...cellDimensions,
+            ...header.sx,
+          }}
+          rowSpan={getRowSpan(data)}
+        >
+          <Tooltip title={openRows?.[data[identifier!]] ? "Shrink" : "Expand"}>
             <IconButton
               aria-label="expand row"
               size="small"
-              onClick={(event) =>
-                handleCollapseIconClick(
-                  event,
-                  data[identifier],
-                  !openRows[data[identifier]]
-                )
-              }
+              onClick={(event) => {
+                if (handleCollapseIconClick) {
+                  handleCollapseIconClick(
+                    event,
+                    data[identifier!],
+                    !openRows?.[data[identifier!]]
+                  );
+                }
+              }}
             >
-              {openRows[data[identifier]] ? (
+              {openRows?.[data[identifier!]] ? (
                 <KeyboardArrowUp />
               ) : (
                 <KeyboardArrowDown />
@@ -348,7 +379,14 @@ export default function EnhancedTable<TData extends Record<string, any>>(
       );
     } else if (header.actions) {
       return (
-        <TableCell key={key} sx={cellDimensions} rowSpan={getRowSpan(data)}>
+        <TableCell
+          key={key}
+          sx={{
+            ...cellDimensions,
+            ...header.sx,
+          }}
+          rowSpan={getRowSpan(data)}
+        >
           {header.actions.map((action) =>
             action.hideCondition && action.hideCondition(data) ? null : (
               <Tooltip key={action.id} title={action.tooltip}>
@@ -382,7 +420,10 @@ export default function EnhancedTable<TData extends Record<string, any>>(
         <TableCell
           key={key}
           align={header.numeric ? "right" : "left"}
-          sx={cellDimensions}
+          sx={{
+            ...cellDimensions,
+            ...header.sx,
+          }}
           onClick={(event) =>
             header.stopPropagation ? event.stopPropagation() : {}
           }
@@ -403,7 +444,10 @@ export default function EnhancedTable<TData extends Record<string, any>>(
           dangerouslySetInnerHTML={{
             __html: formatContent(header, content) as string,
           }}
-          sx={cellDimensions}
+          sx={{
+            ...cellDimensions,
+            ...header.sx,
+          }}
           rowSpan={getRowSpan(data)}
         />
       );
@@ -413,7 +457,10 @@ export default function EnhancedTable<TData extends Record<string, any>>(
       <TableCell
         key={key}
         align={header.numeric ? "right" : "left"}
-        sx={cellDimensions}
+        sx={{
+          ...cellDimensions,
+          ...header.sx,
+        }}
         rowSpan={getRowSpan(data)}
       >
         {formatContent(header, content)}
@@ -477,11 +524,11 @@ export default function EnhancedTable<TData extends Record<string, any>>(
   const handleTableRowClick =
     (row: TData) => (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
       if (disableRowClick) return;
-      if (collapsible) {
+      if (collapsible && handleCollapseIconClick) {
         handleCollapseIconClick(
           event,
-          row[identifier],
-          !openRows[row[identifier]]
+          row[identifier!],
+          !openRows?.[row[identifier!]]
         );
       }
       if (handleRowClick) {
@@ -494,14 +541,17 @@ export default function EnhancedTable<TData extends Record<string, any>>(
       <Paper sx={{ position: "relative", width: "100%", mb: 2 }}>
         {showToolbar ? (
           <EnhancedTableToolbar
-            selected={selected.length > 0 ? selected[0] : {}}
-            descriptorAttribute={descriptorAttribute}
-            handleActionClick={(event, action) =>
-              handleActionClick(event, action)
-            }
+            selected={selected && selected.length > 0 ? selected?.[0] : {}}
+            descriptorAttribute={descriptorAttribute || ""}
+            handleActionClick={(event, action) => {
+              if (handleActionClick) {
+                handleActionClick(event, action);
+              }
+            }}
             actionButtons={actionButtons}
-            handleUniversalFilterChange={handleUniversalFilterChange}
-            handleDateChange={handleDateChange}
+            handleUniversalFilterChange={handleUniversalFilterChange!}
+            handleDateChange={handleDateChange!}
+            date={date}
             dates={dates}
             loading={loading}
             refreshBadgeCount={refreshBadgeCount}
@@ -518,14 +568,14 @@ export default function EnhancedTable<TData extends Record<string, any>>(
             <EnhancedTableHead
               headers={headers}
               order={order}
-              orderBy={orderBy}
-              onRequestSort={handleRequestSort}
+              orderBy={orderBy || "id"}
+              onRequestSort={handleRequestSort!}
             />
             <TableBody>
               {rows.map((row, index) => {
                 let isItemSelected = isSelected(row);
                 return (
-                  <Fragment key={row[identifier] || index}>
+                  <Fragment key={row[identifier!] || index}>
                     <TableRow
                       hover={isSelectible(row)}
                       onClick={handleTableRowClick(row)}
@@ -545,7 +595,7 @@ export default function EnhancedTable<TData extends Record<string, any>>(
                               key={getKey(header)}
                               header={header}
                               row={row}
-                              identifier={identifier}
+                              identifier={identifier!}
                               handleNestedAction={handleNestedAction}
                               handleNestedFieldChange={handleNestedFieldChange}
                               nestedRowAction={nestedRowAction}
@@ -566,7 +616,7 @@ export default function EnhancedTable<TData extends Record<string, any>>(
                       >
                         <TableCell sx={{ py: 0 }} colSpan={headers.length}>
                           <Collapse
-                            in={openRows[row[identifier]]}
+                            in={openRows?.[row[identifier!]]}
                             timeout="auto"
                             mountOnEnter
                             unmountOnExit
@@ -578,7 +628,7 @@ export default function EnhancedTable<TData extends Record<string, any>>(
                                 <Table size="small" aria-label="details">
                                   <TableHead>
                                     <TableRow>
-                                      {collapseHeaders.map((head) => (
+                                      {collapseHeaders?.map((head) => (
                                         <TableCell key={getKey(head)}>
                                           {head.label}
                                         </TableCell>
@@ -587,7 +637,7 @@ export default function EnhancedTable<TData extends Record<string, any>>(
                                   </TableHead>
                                   <TableBody>
                                     <TableRow>
-                                      {collapseHeaders.map((head) =>
+                                      {collapseHeaders?.map((head) =>
                                         getCellComponent(head, row)
                                       )}
                                     </TableRow>
@@ -615,9 +665,9 @@ export default function EnhancedTable<TData extends Record<string, any>>(
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={totalCount || 0}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handlePageChange}
+            rowsPerPage={rowsPerPage!}
+            page={(page ?? 1) - 1}
+            onPageChange={handlePageChange ?? (() => {})}
             onRowsPerPageChange={handleRowsPerPageChange}
           />
         ) : null}
@@ -628,7 +678,7 @@ export default function EnhancedTable<TData extends Record<string, any>>(
             color: "#fff",
             position: "absolute",
           }}
-          open={loading}
+          open={loading ?? false}
         >
           <CircularProgress color="inherit" />
         </Backdrop>
@@ -653,10 +703,6 @@ EnhancedTable.defaultProps = {
   disableRowClick: false,
   handleUniversalFilterChange: () => {},
   handleDateChange: () => {},
-  dates: {
-    from: format(new Date(), "yyyy-MM-dd"),
-    to: format(new Date(), "yyyy-MM-dd"),
-  },
   actionButtons: ["create", "edit", "delete", "filter"],
   showToolbar: true,
   collapsible: false,

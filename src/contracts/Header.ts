@@ -1,3 +1,5 @@
+import { TableCellProps } from "@mui/material";
+
 import { Action } from "./Action";
 
 export interface Header<TData extends Record<string, any> = {}> {
@@ -76,7 +78,7 @@ export interface Header<TData extends Record<string, any> = {}> {
    * }
    * ```
    */
-  headerActions?: Array<Action<TData>>;
+  headerActions?: Array<Action<Header<TData>>>;
   /**
    * Custom component for cell content. Row data is passed as sole parameter.
    */
@@ -172,4 +174,8 @@ export interface Header<TData extends Record<string, any> = {}> {
    * `attribute` is required for column to be sortable
    */
   sortable?: boolean;
+  /**
+   * sx prop to pass to TabelCell component wrapping header
+   */
+  sx?: TableCellProps["sx"];
 }

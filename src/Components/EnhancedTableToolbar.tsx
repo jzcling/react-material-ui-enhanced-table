@@ -54,8 +54,12 @@ interface Props<TData> {
   handleUniversalFilterChange: (
     event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => void;
-  handleDateChange: (dateField: "from" | "to", value: string | null) => void;
-  dates: { from: string; to: string };
+  handleDateChange: (
+    dateField: "from" | "to" | "date",
+    value: Date | null
+  ) => void;
+  date?: string;
+  dates?: { from: string; to: string };
   loading: boolean;
   refreshBadgeCount: number;
   disableSelection: boolean;
@@ -69,6 +73,7 @@ export default function EnhancedTableToolbar<TData>(props: Props<TData>) {
     actionButtons,
     handleUniversalFilterChange,
     handleDateChange,
+    date,
     dates,
     loading,
     refreshBadgeCount,
@@ -97,29 +102,46 @@ export default function EnhancedTableToolbar<TData>(props: Props<TData>) {
           {get(selected, descriptorAttribute)}
         </Typography>
       ) : actionButtons.includes("dateFilters") ? (
-        <Fragment>
-          <LocalizationProvider dateAdapter={DateAdapter}>
-            <DatePicker
-              inputFormat="dd/MM/yyyy"
-              label="From"
-              value={dates.from || null}
-              onChange={(value) => handleDateChange("from", value)}
-              renderInput={(params) => <TextField size="small" {...params} />}
-            />
-          </LocalizationProvider>
-          <Box sx={{ ml: 1 }}>
+        dates ? (
+          <>
             <LocalizationProvider dateAdapter={DateAdapter}>
               <DatePicker
                 inputFormat="dd/MM/yyyy"
-                label="To"
-                value={dates.to || null}
-                onChange={(value) => handleDateChange("to", value)}
+                label="From"
+                value={dates.from || null}
+                onChange={(value) => handleDateChange("from", value)}
                 renderInput={(params) => <TextField size="small" {...params} />}
               />
             </LocalizationProvider>
-          </Box>
-          <Box sx={{ flexGrow: 1 }} />
-        </Fragment>
+            <Box sx={{ ml: 1 }}>
+              <LocalizationProvider dateAdapter={DateAdapter}>
+                <DatePicker
+                  inputFormat="dd/MM/yyyy"
+                  label="To"
+                  value={dates.to || null}
+                  onChange={(value) => handleDateChange("to", value)}
+                  renderInput={(params) => (
+                    <TextField size="small" {...params} />
+                  )}
+                />
+              </LocalizationProvider>
+            </Box>
+            <Box sx={{ flexGrow: 1 }} />
+          </>
+        ) : date !== undefined ? (
+          <>
+            <LocalizationProvider dateAdapter={DateAdapter}>
+              <DatePicker
+                inputFormat="dd/MM/yyyy"
+                label="Date"
+                value={date}
+                onChange={(value) => handleDateChange("date", value)}
+                renderInput={(params) => <TextField size="small" {...params} />}
+              />
+            </LocalizationProvider>
+            <Box sx={{ flexGrow: 1 }} />
+          </>
+        ) : null
       ) : (
         <Box sx={{ flexGrow: 1 }} />
       )}
